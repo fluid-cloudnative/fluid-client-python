@@ -3,13 +3,13 @@
 
 from __future__ import absolute_import
 
-# import models into model package
-from fluid.module.api_gateway_status import APIGatewayStatus
 from fluid.module.alluxio_comp_template_spec import AlluxioCompTemplateSpec
 from fluid.module.alluxio_fuse_spec import AlluxioFuseSpec
 from fluid.module.alluxio_runtime import AlluxioRuntime
 from fluid.module.alluxio_runtime_list import AlluxioRuntimeList
 from fluid.module.alluxio_runtime_spec import AlluxioRuntimeSpec
+# import models into model package
+from fluid.module.api_gateway_status import APIGatewayStatus
 from fluid.module.backup_location import BackupLocation
 from fluid.module.cacheable_node_affinity import CacheableNodeAffinity
 from fluid.module.condition import Condition
@@ -58,3 +58,4 @@ from fluid.module.target_path import TargetPath
 from fluid.module.tiered_store import TieredStore
 from fluid.module.user import User
 from fluid.module.version_spec import VersionSpec
+from fluid.version import VERSION as __version__
