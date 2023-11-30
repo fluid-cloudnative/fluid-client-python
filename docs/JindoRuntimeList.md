@@ -1,5 +1,6 @@
 # JindoRuntimeList
 
+JindoRuntimeList contains a list of JindoRuntime
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------

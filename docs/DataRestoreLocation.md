@@ -1,5 +1,6 @@
 # DataRestoreLocation
 
+DataRestoreLocation describes the spec restore location of  Dataset
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------

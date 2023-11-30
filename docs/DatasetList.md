@@ -1,5 +1,6 @@
 # DatasetList
 
+DatasetList contains a list of Dataset
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
