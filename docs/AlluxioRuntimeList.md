@@ -1,5 +1,6 @@
 # AlluxioRuntimeList
 
+AlluxioRuntimeList contains a list of AlluxioRuntime
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------

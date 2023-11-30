@@ -1,5 +1,6 @@
 # Dataset
 
+Dataset is the Schema for the datasets API
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------

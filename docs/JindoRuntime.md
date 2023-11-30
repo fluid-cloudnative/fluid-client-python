@@ -1,5 +1,6 @@
 # JindoRuntime
 
+JindoRuntime is the Schema for the jindoruntimes API
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------

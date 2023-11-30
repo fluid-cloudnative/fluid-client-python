@@ -1,5 +1,6 @@
 # APIGatewayStatus
 
+API Gateway
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
