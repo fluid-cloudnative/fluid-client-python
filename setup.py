@@ -14,6 +14,7 @@
 
 #  coding: utf-8
 
+from importlib.machinery import SourceFileLoader
 from setuptools import setup, find_packages  # noqa: H301
 
 NAME = "fluid"
