@@ -1,5 +1,6 @@
 # AlluxioRuntime
 
+AlluxioRuntime is the Schema for the alluxioruntimes API
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------

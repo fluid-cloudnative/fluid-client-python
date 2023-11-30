@@ -1,5 +1,6 @@
 # VersionSpec
 
+VersionSpec represents the settings for the  version that fluid is orchestrating.
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
