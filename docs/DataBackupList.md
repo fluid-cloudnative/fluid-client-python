@@ -1,5 +1,6 @@
 # DataBackupList
 
+DataBackupList contains a list of DataBackup
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------

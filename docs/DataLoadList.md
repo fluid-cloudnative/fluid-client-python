@@ -1,5 +1,6 @@
 # DataLoadList
 
+DataLoadList contains a list of DataLoad
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------

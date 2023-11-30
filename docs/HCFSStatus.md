@@ -1,5 +1,6 @@
 # HCFSStatus
 
+HCFS Endpoint info
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
