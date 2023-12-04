@@ -3,6 +3,7 @@ from fluid import constants
 
 # Initialize kubernetes client
 config.load_kube_config()
+#config.load_incluster_config() # Load in-cluster kubeconfig
 api_instance = client.CustomObjectsApi()
 
 namespace = "default"
