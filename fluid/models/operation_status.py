@@ -36,8 +36,8 @@ class OperationStatus(object):
         'conditions': 'list[Condition]',
         'duration': 'str',
         'infos': 'dict(str, str)',
-        'last_schedule_time': 'V1Time',
-        'last_successful_time': 'V1Time',
+        'last_schedule_time': 'datetime',
+        'last_successful_time': 'datetime',
         'phase': 'str',
         'waiting_for': 'WaitingStatus'
     }
@@ -158,7 +158,7 @@ class OperationStatus(object):
 
 
         :return: The last_schedule_time of this OperationStatus.  # noqa: E501
-        :rtype: V1Time
+        :rtype: datetime
         """
         return self._last_schedule_time
 
@@ -168,7 +168,7 @@ class OperationStatus(object):
 
 
         :param last_schedule_time: The last_schedule_time of this OperationStatus.  # noqa: E501
-        :type: V1Time
+        :type: datetime
         """
 
         self._last_schedule_time = last_schedule_time
@@ -179,7 +179,7 @@ class OperationStatus(object):
 
 
         :return: The last_successful_time of this OperationStatus.  # noqa: E501
-        :rtype: V1Time
+        :rtype: datetime
         """
         return self._last_successful_time
 
@@ -189,7 +189,7 @@ class OperationStatus(object):
 
 
         :param last_successful_time: The last_successful_time of this OperationStatus.  # noqa: E501
-        :type: V1Time
+        :type: datetime
         """
 
         self._last_successful_time = last_successful_time

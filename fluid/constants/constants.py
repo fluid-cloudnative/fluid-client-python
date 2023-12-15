@@ -16,6 +16,8 @@ from typing import Union
 
 from fluid import models
 
+DEFAULT_TIMEOUT = 120
+
 GROUP = "data.fluid.io"
 VERSION = "v1alpha1"
 API_VERSION = f"{GROUP}/{VERSION}"

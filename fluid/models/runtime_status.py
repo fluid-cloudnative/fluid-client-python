@@ -51,7 +51,7 @@ class RuntimeStatus(object):
         'master_number_ready': 'int',
         'master_phase': 'str',
         'master_reason': 'str',
-        'mount_time': 'V1Time',
+        'mount_time': 'datetime',
         'mounts': 'list[Mount]',
         'selector': 'str',
         'setup_duration': 'str',
@@ -610,7 +610,7 @@ class RuntimeStatus(object):
 
 
         :return: The mount_time of this RuntimeStatus.  # noqa: E501
-        :rtype: V1Time
+        :rtype: datetime
         """
         return self._mount_time
 
@@ -620,7 +620,7 @@ class RuntimeStatus(object):
 
 
         :param mount_time: The mount_time of this RuntimeStatus.  # noqa: E501
-        :type: V1Time
+        :type: datetime
         """
 
         self._mount_time = mount_time

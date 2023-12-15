@@ -22,7 +22,7 @@ Name | Type | Description | Notes
 **master_number_ready** | **int** | The number of nodes that should be running the runtime worker pod and have zero or more of the runtime master pod running and ready. | [default to 0]
 **master_phase** | **str** | MasterPhase is the master running phase | [default to '']
 **master_reason** | **str** | Reason for Master&#39;s condition transition | [optional] 
-**mount_time** | [**V1Time**](V1Time.md) |  | [optional] 
+**mount_time** | [**datetime**](V1Time.md) |  | [optional] 
 **mounts** | [**list[Mount]**](Mount.md) | MountPoints represents the mount points specified in the bounded dataset | [optional] 
 **selector** | **str** | Selector is used for auto-scaling | [optional] 
 **setup_duration** | **str** | Duration tell user how much time was spent to setup the runtime | [optional] 

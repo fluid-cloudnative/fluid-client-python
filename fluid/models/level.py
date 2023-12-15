@@ -37,7 +37,7 @@ class Level(object):
         'low': 'str',
         'mediumtype': 'str',
         'path': 'str',
-        'quota': 'K8sIoApimachineryPkgApiResourceQuantity',
+        'quota': 'str',
         'quota_list': 'str',
         'volume_source': 'VolumeSource',
         'volume_type': 'str'
@@ -186,7 +186,7 @@ class Level(object):
 
 
         :return: The quota of this Level.  # noqa: E501
-        :rtype: K8sIoApimachineryPkgApiResourceQuantity
+        :rtype: str
         """
         return self._quota
 
@@ -196,7 +196,7 @@ class Level(object):
 
 
         :param quota: The quota of this Level.  # noqa: E501
-        :type: K8sIoApimachineryPkgApiResourceQuantity
+        :type: str
         """
 
         self._quota = quota

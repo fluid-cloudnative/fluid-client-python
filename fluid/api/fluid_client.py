@@ -136,14 +136,86 @@ class FluidClient(object):
 
         logger.debug(f"{data_op.kind} \"{namespace}/{data_op.metadata.name}\" created successfully")
 
-    def get_dataset_status(self, name, namespace=None):
-        pass
+    def get_dataset(self, name, namespace=None, timeout=constants.DEFAULT_TIMEOUT) -> models.Dataset:
+        namespace = namespace or self.namespace
 
-    def get_runtime_status(self, name, runtime_type, namespace=None):
-        pass
+        try:
+            thread = self.custom_api.get_namespaced_custom_object(
+                constants.GROUP,
+                constants.VERSION,
+                namespace,
+                constants.FLUID_CRD_PARAMETERS[constants.DATASET_KIND]["plural"],
+                name,
+                async_req=True
+            )
+            response = utils.FakeResponse(thread.get(timeout=timeout))
+            dataset = self.api_client.deserialize(response, models.Dataset)
+        except multiprocessing.TimeoutError:
+            raise TimeoutError(
+                f"TimeoutError: Timed out when getting dataset \"{namespace}/{name}\""
+            )
+        except Exception as e:
+            raise RuntimeError(
+                f"RuntimeError: Failed to get dataset \"{namespace}/{name}\": {e}"
+            )
+        return dataset
 
-    def get_data_operation_status(self, name, data_op_type, namespace=None):
-        pass
+    def get_runtime(self, name, runtime_type, namespace=None,
+                    timeout=constants.DEFAULT_TIMEOUT) -> constants.RUNTIME_MODELS_TYPE:
+        namespace = namespace or self.namespace
+        runtime_kind = utils.infer_runtime_kind(runtime_type)
+        if runtime_kind is None:
+            raise ValueError(
+                f"runtime_type is not supported, supported types: {list(constants.RUNTIME_PARAMETERS.keys())}")
+        try:
+            thread = self.custom_api.get_namespaced_custom_object(
+                constants.GROUP,
+                constants.VERSION,
+                namespace,
+                constants.RUNTIME_PARAMETERS[runtime_kind]["plural"],
+                name,
+                async_req=True
+            )
+            response = utils.FakeResponse(thread.get(timeout=timeout))
+            runtime = self.api_client.deserialize(response, constants.RUNTIME_PARAMETERS[runtime_kind]["model"])
+        except multiprocessing.TimeoutError:
+            raise TimeoutError(
+                f"TimeoutError: Timed out when getting runtime \"{namespace}/{name}\""
+            )
+        except Exception as e:
+            raise RuntimeError(
+                f"RuntimeError: Failed to get runtime \"{namespace}/{name}\": {e}"
+            )
+
+        return runtime
+
+    def get_data_operation(self, name, data_op_type, namespace=None, timeout=constants.DEFAULT_TIMEOUT):
+        namespace = namespace or self.namespace
+        data_op_kind = utils.infer_data_operation_kind(data_op_type)
+        if data_op_kind is None:
+            raise ValueError(
+                f"data_op_type is not supported, supported types: {list(constants.DATA_OPERATION_PARAMETERS.keys())}")
+
+        try:
+            thread = self.custom_api.get_namespaced_custom_object(
+                constants.GROUP,
+                constants.VERSION,
+                namespace,
+                constants.DATA_OPERATION_PARAMETERS[data_op_kind]["plural"],
+                name,
+                async_req=True
+            )
+            response = utils.FakeResponse(thread.get(timeout=timeout))
+            data_op = self.api_client.deserialize(response, constants.DATA_OPERATION_PARAMETERS[data_op_kind]["model"])
+        except multiprocessing.TimeoutError:
+            raise TimeoutError(
+                f"TimeoutError: Timed out when getting data operation \"{namespace}/{name}\""
+            )
+        except Exception as e:
+            raise RuntimeError(
+                f"RuntimeError: Failed to get data operation \"{namespace}/{name}\": {e}"
+            )
+        return data_op
 
     def delete(self, name, namespace=None, version=constants.VERSION):
         pass

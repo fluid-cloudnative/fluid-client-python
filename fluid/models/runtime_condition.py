@@ -33,8 +33,8 @@ class RuntimeCondition(object):
                             and the value is json key in definition.
     """
     openapi_types = {
-        'last_probe_time': 'V1Time',
-        'last_transition_time': 'V1Time',
+        'last_probe_time': 'datetime',
+        'last_transition_time': 'datetime',
         'message': 'str',
         'reason': 'str',
         'status': 'str',
@@ -81,7 +81,7 @@ class RuntimeCondition(object):
 
 
         :return: The last_probe_time of this RuntimeCondition.  # noqa: E501
-        :rtype: V1Time
+        :rtype: datetime
         """
         return self._last_probe_time
 
@@ -91,7 +91,7 @@ class RuntimeCondition(object):
 
 
         :param last_probe_time: The last_probe_time of this RuntimeCondition.  # noqa: E501
-        :type: V1Time
+        :type: datetime
         """
 
         self._last_probe_time = last_probe_time
@@ -102,7 +102,7 @@ class RuntimeCondition(object):
 
 
         :return: The last_transition_time of this RuntimeCondition.  # noqa: E501
-        :rtype: V1Time
+        :rtype: datetime
         """
         return self._last_transition_time
 
@@ -112,7 +112,7 @@ class RuntimeCondition(object):
 
 
         :param last_transition_time: The last_transition_time of this RuntimeCondition.  # noqa: E501
-        :type: V1Time
+        :type: datetime
         """
 
         self._last_transition_time = last_transition_time
