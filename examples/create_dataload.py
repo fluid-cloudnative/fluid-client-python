@@ -1,46 +1,51 @@
-from kubernetes import client, config
-from fluid import DataLoad, DataLoadSpec, TargetDataset, TargetPath
+import logging
+import sys
+
+from kubernetes import client
+
+from fluid import FluidClient
 from fluid import constants
+from fluid import models
 
-# Initialize kubernetes client
-config.load_kube_config()
-#config.load_incluster_config() # Load in-cluster kubeconfig
-api_instance = client.CustomObjectsApi()
+logger = logging.getLogger("fluidsdk")
+stream_handler = logging.StreamHandler(sys.stdout)
+stream_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+logger.addHandler(stream_handler)
+logger.setLevel(logging.INFO)
 
-namespace = "default"
-name = "demo-dataset-dataload"
 
-target_dataset_name = "demo-dataset"
+# Output detailed debug message for fluidsdk
+# logger.setLevel(logging.DEBUG)
 
-dataload = DataLoad(
-    api_version=constants.API_VERSION,
-    kind=constants.DATA_LOAD_KIND,
-    metadata=client.V1ObjectMeta(
-        namespace=namespace,
-        name=name
-    ),
-    spec=DataLoadSpec(
-        load_metadata=True,
-        dataset=TargetDataset(
-            namespace=namespace,
-            name=target_dataset_name
+def main():
+    fluid_client = FluidClient()
+
+    dataload = models.DataLoad(
+        api_version=constants.API_VERSION,
+        kind=constants.DATA_LOAD_KIND,
+        metadata=client.V1ObjectMeta(
+            namespace="default",
+            name="demo-dataset-dataload"
         ),
-        target=[
-            TargetPath(path="/ckpt", replicas=1),
-        ]
+        spec=models.DataLoadSpec(
+            load_metadata=True,
+            dataset=models.TargetDataset(
+                namespace="default",
+                name="demo-dataset"
+            ),
+            target=[
+                models.TargetPath(path="/", replicas=1),
+            ]
+        )
     )
-)
 
-try:
-    api_instance.create_namespaced_custom_object(
-        constants.GROUP,
-        constants.VERSION,
-        namespace,
-        constants.DATA_LOAD_PLURAL,
-        dataload
-    )
-except Exception as e:
-    print("Error when creating DataLoad: ", e)
-    exit(1)
-else:
-    print(f"DataLoad {namespace}/{name} created.")
+    try:
+        fluid_client.create_data_operation(dataload)
+    except Exception as e:
+        raise RuntimeError(f"Error when creating DataLoad: {e}")
+
+    logger.info(f"DataLoad \"{dataload.metadata.namespace}/{dataload.metadata.name}\" created.")
+
+
+if __name__ == '__main__':
+    main()
