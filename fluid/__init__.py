@@ -17,7 +17,6 @@ __version__ = "0.1"
 
 # import apis into sdk package
 
-from fluid.api.fluid_client import FluidClient
 # import ApiClient
 from fluid.api_client import ApiClient
 from fluid.configuration import Configuration
@@ -123,3 +122,6 @@ from fluid.models.vineyard_runtime_spec import VineyardRuntimeSpec
 from fluid.models.vineyard_sock_spec import VineyardSockSpec
 from fluid.models.volume_source import VolumeSource
 from fluid.models.waiting_status import WaitingStatus
+
+from fluid.api.fluid_client import FluidClient
+from fluid.constants import constants
