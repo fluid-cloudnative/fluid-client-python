@@ -12,6 +12,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 import logging
+import time
 import multiprocessing
 from typing import Optional
 
@@ -106,7 +107,7 @@ class FluidClient(object):
 
         logger.debug(f"{runtime.kind} \"{namespace}/{runtime.metadata.name}\" created successfully")
 
-    def create_data_operation(self, data_op: constants.DATA_OPERATION_MODELS_TYPE, namespace=None):
+    def create_data_operation(self, data_op: constants.DATA_OPERATION_MODELS_TYPE, namespace=None, wait=False):
         if not data_op:
             raise ValueError(f"data_op must be not None")
         if not isinstance(data_op, constants.DATA_OPERATION_MODELS):
@@ -136,6 +137,9 @@ class FluidClient(object):
 
         logger.debug(f"{data_op.kind} \"{namespace}/{data_op.metadata.name}\" created successfully")
 
+        if wait:
+            self.wait_data_operation_completed(data_op.metadata.name, data_op.kind, namespace)
+
     def get_dataset(self, name, namespace=None, timeout=constants.DEFAULT_TIMEOUT) -> models.Dataset:
         namespace = namespace or self.namespace
 
@@ -154,16 +158,19 @@ class FluidClient(object):
             raise TimeoutError(
                 f"TimeoutError: Timed out when getting dataset \"{namespace}/{name}\""
             )
+        except client.ApiException as e:
+            raise e
         except Exception as e:
             raise RuntimeError(
                 f"RuntimeError: Failed to get dataset \"{namespace}/{name}\": {e}"
             )
+        logger.debug(f"Dataset \"{namespace}/{dataset.metadata.name}\" retrieved successfully")
         return dataset
 
-    def get_runtime(self, name, runtime_type, namespace=None,
+    def get_runtime(self, name, runtime_type=None, namespace=None,
                     timeout=constants.DEFAULT_TIMEOUT) -> constants.RUNTIME_MODELS_TYPE:
         namespace = namespace or self.namespace
-        runtime_kind = utils.infer_runtime_kind(runtime_type)
+        runtime_kind = utils.infer_runtime_kind(runtime_type) or self.default_runtime_kind
         if runtime_kind is None:
             raise ValueError(
                 f"runtime_type is not supported, supported types: {list(constants.RUNTIME_PARAMETERS.keys())}")
@@ -182,10 +189,13 @@ class FluidClient(object):
             raise TimeoutError(
                 f"TimeoutError: Timed out when getting runtime \"{namespace}/{name}\""
             )
+        except client.ApiException as e:
+            raise e
         except Exception as e:
             raise RuntimeError(
                 f"RuntimeError: Failed to get runtime \"{namespace}/{name}\": {e}"
             )
+        logger.debug(f"{runtime.kind} \"{namespace}/{runtime.metadata.name}\" retrieved successfully")
 
         return runtime
 
@@ -211,11 +221,163 @@ class FluidClient(object):
             raise TimeoutError(
                 f"TimeoutError: Timed out when getting data operation \"{namespace}/{name}\""
             )
+        except client.ApiException as e:
+            raise e
         except Exception as e:
             raise RuntimeError(
                 f"RuntimeError: Failed to get data operation \"{namespace}/{name}\": {e}"
             )
+        logger.debug(f"{data_op.kind} \"{namespace}/{data_op.metadata.name}\" retrieved successfully")
         return data_op
 
-    def delete(self, name, namespace=None, version=constants.VERSION):
-        pass
+    def wait_data_operation_completed(self, name, data_op_type, namespace=None,
+                                      poll_timeout=constants.DEFAULT_POLL_TIMEOUT,
+                                      poll_interval=constants.DEFAULT_POLL_INTERVAL):
+        namespace = namespace or self.namespace
+        data_op_kind = utils.infer_data_operation_kind(data_op_type)
+
+        if data_op_kind is None:
+            raise ValueError(
+                f"data_op_type is not supported, supported types: {list(constants.DATA_OPERATION_PARAMETERS.keys())}")
+
+        poll = 0
+        while poll < poll_timeout:
+            data_op = self.get_data_operation(name, data_op_type, namespace)
+            if not data_op.status:
+                logger.warning(f"{data_op.kind} \"{data_op.metadata.namespace}/{data_op.metadata.name}\"'s current "
+                               f"status is None, this may happen when the {data_op.kind} is just created. Temporarily"
+                               f" ignoring it.")
+            else:
+                phase = data_op.status.phase
+                logger.debug(
+                    f"{data_op.kind} \"{data_op.metadata.namespace}/{data_op.metadata.name}\"'s current phase: {phase}")
+                if phase == "Complete":
+                    logger.debug(
+                        f"{data_op.kind} \"{data_op.metadata.namespace}/{data_op.metadata.name}\" completed successfully after {data_op.status.duration}")
+                    break
+                if phase == "Failed":
+                    logger.debug(f"{data_op.kind} \"{data_op.metadata.namespace}/{data_op.metadata.name}\" failed.")
+                    raise RuntimeError(
+                        f"{data_op.kind} \"{data_op.metadata.namespace}/{data_op.metadata.name}\" failed.")
+
+            poll += 1
+            time.sleep(poll_interval)
+
+        if poll >= poll_timeout:
+            raise TimeoutError(f"TimeoutError: Timed out when waiting data operation \"{namespace}/{name}\"")
+
+    def delete_dataset(self, name, namespace=None, wait_until_cleaned_up=False, timeout=constants.DEFAULT_TIMEOUT,
+                       **kwargs):
+        namespace = namespace or self.namespace
+
+        kwargs = {
+
+        }
+
+        try:
+            self.custom_api.delete_namespaced_custom_object(
+                constants.GROUP,
+                constants.VERSION,
+                namespace,
+                constants.FLUID_CRD_PARAMETERS[constants.DATASET_KIND]["plural"],
+                name,
+                **kwargs
+            )
+        except multiprocessing.TimeoutError:
+            raise TimeoutError(
+                f"TimeoutError: Timed out when deleting dataset \"{namespace}/{name}\""
+            )
+        except client.ApiException as e:
+            if e.status == 404:
+                logger.warning(f"Dataset \"{namespace}/{name}\" not found. Maybe already deleted.")
+        except Exception as e:
+            raise RuntimeError(f"Failed to delete dataset \"{namespace}/{name}\": {e}.")
+
+        if wait_until_cleaned_up:
+            poll = 0
+            while poll < timeout:
+                try:
+                    self.get_dataset(name, namespace)
+                    poll += 1
+                    time.sleep(1)
+                except client.ApiException as e:
+                    if e.status == 404:
+                        break
+
+            if poll >= timeout:
+                raise TimeoutError(f"TimeoutError: Timed out when waiting dataset \"{namespace}/{name}\" deleted")
+
+        logger.debug(f"Dataset \"{namespace}/{name}\" deleted successfully")
+
+        if wait_until_cleaned_up:
+            self.delete_runtime(name, runtime_type=None, namespace=namespace,
+                                wait_until_cleaned_up=wait_until_cleaned_up, timeout=timeout, **kwargs)
+
+    def delete_runtime(self, name, runtime_type=None, namespace=None, wait_until_cleaned_up=False,
+                       timeout=constants.DEFAULT_TIMEOUT, **kwargs):
+        namespace = namespace or self.namespace
+        runtime_kind = utils.infer_runtime_kind(runtime_type) or self.default_runtime_kind
+        if runtime_kind is None:
+            raise ValueError(
+                f"runtime_type is not supported, supported types: {list(constants.RUNTIME_PARAMETERS.keys())}")
+
+        try:
+            self.custom_api.delete_namespaced_custom_object(
+                constants.GROUP,
+                constants.VERSION,
+                namespace,
+                constants.RUNTIME_PARAMETERS[runtime_kind]["plural"],
+                name,
+                **kwargs
+            )
+        except multiprocessing.TimeoutError:
+            raise TimeoutError(
+                f"TimeoutError: Timed out when deleting runtime \"{namespace}/{name}\""
+            )
+        except client.ApiException as e:
+            if e.status == 404:
+                logger.warning(f"{runtime_kind} \"{namespace}/{name}\" not found. Maybe already deleted.")
+        except Exception:
+            raise RuntimeError(f"Failed to delete runtime \"{namespace}/{name}\".")
+
+        if wait_until_cleaned_up:
+            poll = 0
+            while poll < timeout:
+                try:
+                    self.get_runtime(name, runtime_type=runtime_kind, namespace=namespace)
+                    poll += 1
+                    time.sleep(1)
+                except client.ApiException as e:
+                    if e.status == 404:
+                        break
+            if poll >= timeout:
+                raise TimeoutError(f"TimeoutError: Timed out when waiting runtime \"{namespace}/{name}\" deleted")
+
+        logger.debug(f"{runtime_kind} \"{namespace}/{name}\" deleted successfully")
+
+    def delete_data_operation(self, name, data_op_type, namespace=None, **kwargs):
+        namespace = namespace or self.namespace
+        data_op_kind = utils.infer_data_operation_kind(data_op_type)
+        if data_op_kind is None:
+            raise ValueError(
+                f"data_op_type is not supported, supported types: {list(constants.DATA_OPERATION_PARAMETERS.keys())}")
+
+        try:
+            self.custom_api.delete_namespaced_custom_object(
+                constants.GROUP,
+                constants.VERSION,
+                namespace,
+                constants.DATA_OPERATION_PARAMETERS[data_op_kind]["plural"],
+                name,
+                **kwargs
+            )
+        except multiprocessing.TimeoutError:
+            raise TimeoutError(
+                f"TimeoutError: Timed out when deleting data operation \"{namespace}/{name}\""
+            )
+        except client.ApiException as e:
+            if e.status == 404:
+                logger.warning(f"{data_op_kind} \"{namespace}/{name}\" not found. Maybe already deleted.")
+        except Exception:
+            raise RuntimeError(f"Failed to delete data operation \"{namespace}/{name}\".")
+        logger.debug(f"{data_op_kind} \"{namespace}/{name}\" deleted successfully")

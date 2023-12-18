@@ -43,6 +43,9 @@ def get_obj_namespace(obj: client.V1ObjectMeta):
 
 
 def infer_data_operation_kind(data_op_type: str) -> Optional[str]:
+    if not data_op_type:
+        return None
+
     data_op_type = data_op_type.lower()
     data_op_mapping = {
         "dataload": constants.DATA_LOAD_KIND,
@@ -53,12 +56,15 @@ def infer_data_operation_kind(data_op_type: str) -> Optional[str]:
         "dataprocesses": constants.DATA_PROCESS_KIND,
     }
 
-    if not data_op_type in data_op_mapping:
+    if data_op_type not in data_op_mapping:
         return None
     return data_op_mapping[data_op_type]
 
 
 def infer_runtime_kind(runtime_type: str) -> Optional[str]:
+    if not runtime_type:
+        return None
+
     runtime_type = runtime_type.lower()
 
     runtime_mapping = {
@@ -88,7 +94,7 @@ def infer_runtime_kind(runtime_type: str) -> Optional[str]:
         "thinruntimes": constants.THIN_RUNTIME_KIND,
     }
 
-    if not runtime_type in runtime_mapping:
+    if runtime_type not in runtime_mapping:
         return None
 
     return runtime_mapping[runtime_type]
