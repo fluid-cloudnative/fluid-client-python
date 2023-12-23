@@ -65,7 +65,11 @@ class FluidFileSystem:
             kwargs["secret"] = "password"
             kwargs["endpoint_url"] = f"http://{dataset_name}-s3-gateway:9000"
             # kwargs["endpoint_url"] = f"http://127.0.0.1:9000"
-            self.s3_client = s3fs.S3FileSystem(**kwargs)
+            config_kwargs = {
+                "read_timeout": 1800,
+                "connect_timeout": 30,
+            }
+            self.s3_client = s3fs.S3FileSystem(config_kwargs=config_kwargs, **kwargs)
 
             self.bucket_name = dataset.spec.mounts[0].name
 

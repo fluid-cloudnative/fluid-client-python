@@ -11,7 +11,6 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
-
 #  Copyright 2023 The Fluid Authors.
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -126,6 +125,14 @@ class FluidDatasetFolder(FluidMapDataset):
     def __len__(self) -> int:
         return len(self.samples)
 
+    def _make_samples_for_target_class(self, filesystem, target_dir, target_class, is_valid_file):
+        instances = []
+        for path in sorted(filesystem.find(target_dir)):
+            if is_valid_file(path):
+                item = path, target_class
+                instances.append(item)
+        return instances
+
     def make_dataset(
             self,
             directory: str,
@@ -150,23 +157,54 @@ class FluidDatasetFolder(FluidMapDataset):
         filesystem = FluidFileSystem(dataset_name=self.dataset_name)
         instances = []
         available_classes = set()
-        for target_class in sorted(class_to_idx.keys()):
-            start_time = time.time()
 
-            class_index = class_to_idx[target_class]
-            target_dir = os.path.join(directory, target_class)
-            if not filesystem.isdir(target_dir):
-                continue
-            for root, _, fnames in sorted(filesystem.walk(target_dir)):  # how about using find ?
-                for fname in sorted(fnames):
-                    path = os.path.join(root, fname)
-                    if is_valid_file(path):
-                        item = path, class_index
+        # result = await asyncio.gather(*[self._make_samples_for_target_class(filesystem, os.path.join(directory, target_class), target_class, is_valid_file) for target_class in class_to_idx.keys()])
+        # for instance in result:
+        #     for sample, target_class in instance:
+        #         item = sample, target_class
+        #         instances.append(item)
+        #         if target_class not in available_classes:
+        #             available_classes.add(target_class)
+
+        import concurrent.futures
+        with concurrent.futures.ThreadPoolExecutor(max_workers=32) as executor:
+            future_samples = {
+                executor.submit(self._make_samples_for_target_class, filesystem, os.path.join(directory, target_class),
+                                target_class, is_valid_file): target_class for target_class in class_to_idx.keys()}
+            for future in concurrent.futures.as_completed(future_samples):
+                try:
+                    instance = future.result()
+                    for sample, target_class in instance:
+                        item = sample, class_to_idx[target_class]
                         instances.append(item)
-
                         if target_class not in available_classes:
                             available_classes.add(target_class)
-            print(f"{target_class} ready: {time.time() - start_time}")
+                except Exception as exc:
+                    print('%r generated an exception: %s' % (target_class, exc))
+
+        # for target_class in sorted(class_to_idx.keys()):
+        #     start_time = time.time()
+        #
+        #     class_index = class_to_idx[target_class]
+        #     target_dir = os.path.join(directory, target_class)
+        #     if not filesystem.isdir(target_dir):
+        #         continue
+        #     for path in sorted(filesystem.find(target_dir)):
+        #         if is_valid_file(path):
+        #             item = path, class_index
+        #             instances.append(item)
+        #             if target_class not in available_classes:
+        #                 available_classes.add(target_class)
+        #     # for root, _, fnames in sorted(filesystem.walk(target_dir)):  # how about using find ?
+        #     #     for fname in sorted(fnames):
+        #     #         path = os.path.join(root, fname)
+        #     #         if is_valid_file(path):
+        #     #             item = path, class_index
+        #     #             instances.append(item)
+        #     #
+        #     #             if target_class not in available_classes:
+        #     #                 available_classes.add(target_class)
+        #     print(f"{target_class} ready: {time.time() - start_time}")
 
         empty_classes = set(class_to_idx.keys()) - available_classes
         if empty_classes:
@@ -180,8 +218,8 @@ class FluidDatasetFolder(FluidMapDataset):
     def find_classes(self, directory: str) -> Tuple[List[str], Dict[str, int]]:
         classes = []
         filesystem = FluidFileSystem(dataset_name=self.dataset_name)
-        for _, folder_names, file, in filesystem.walk(directory, maxdepth=1):
-            classes.extend(folder_names)
+        for direntry in filesystem.listdir(directory):
+            classes.append(direntry['name'].split("/")[-1])
         classes = sorted(classes)
         class_to_idx = {classes[i]: i for i in range(len(classes))}
 
