@@ -113,7 +113,6 @@ class FluidFileSystem(fsspec.AbstractFileSystem):
 
     def find(self, path, maxdepth=None, withdirs=False, detail=False, **kwargs):
         s3_resp = self.s3_client.find(self._expand_path(path), maxdepth, withdirs, detail, **kwargs)
-        print(s3_resp)
         if isinstance(s3_resp, Dict):
             return {self._fold_path(key): self._fold_file_stat(value) for key, value in s3_resp.items()}
         return [self._fold_path(x) for x in s3_resp]
