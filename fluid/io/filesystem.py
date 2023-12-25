@@ -22,10 +22,12 @@ from kubernetes import client
 from typing import Dict
 
 import os
+import fsspec
 
 
-class FluidFileSystem:
-    def __init__(self, dataset_name: str, workdir=None, **kwargs):
+class FluidFileSystem(fsspec.AbstractFileSystem):
+    def __init__(self, dataset_name: str, workdir=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.fluid_client = FluidClient()
 
         if workdir is None:
@@ -84,10 +86,22 @@ class FluidFileSystem:
         return f"{self.path_prefix}/{path}"
 
     def _fold_path(self, path: str):
-        return path[len(self.path_prefix_without_protocol):]
+        ret_path = path[len(self.path_prefix_without_protocol):]
+        return ret_path if len(ret_path) > 0 else "/"
+
+    def _fold_file_stat(self, stat):
+        x = copy.deepcopy(stat)
+        x['name'] = self._fold_path(x['name'])
+        if 'Key' in x:
+            x['Key'] = self._fold_path(x['Key'])
+        return x
 
     def ls(self, path, detail=True, **kwargs):
-        return self.s3_client.ls(self._expand_path(path), detail, **kwargs)
+        s3_resp = self.s3_client.ls(self._expand_path(path), detail, **kwargs)
+        if detail:
+            return [self._fold_file_stat(x) for x in s3_resp]
+        else:
+            return [self._fold_path(x) for x in s3_resp]
 
     def walk(self, path, maxdepth=None, topdown=True, on_error="omit", **kwargs):
         def generator():
@@ -98,19 +112,22 @@ class FluidFileSystem:
         return generator()
 
     def find(self, path, maxdepth=None, withdirs=False, detail=False, **kwargs):
-        ret = self.s3_client.find(self._expand_path(path), maxdepth, withdirs, detail, **kwargs)
-        return [self._fold_path(x) for x in ret]
+        s3_resp = self.s3_client.find(self._expand_path(path), maxdepth, withdirs, detail, **kwargs)
+        print(s3_resp)
+        if isinstance(s3_resp, Dict):
+            return {self._fold_path(key): self._fold_file_stat(value) for key, value in s3_resp.items()}
+        return [self._fold_path(x) for x in s3_resp]
 
     def du(self, path, total=True, maxdepth=None, **kwargs):
-        res = self.s3_client.du(self._expand_path(path), total, maxdepth, **kwargs)
-        if isinstance(res, Dict):
-            return {self._fold_path(key): value for key, value in res.items()}
+        s3_resp = self.s3_client.du(self._expand_path(path), total, maxdepth, **kwargs)
+        if isinstance(s3_resp, Dict):
+            return {self._fold_path(key): value for key, value in s3_resp.items()}
 
-        return res
+        return s3_resp
 
     def glob(self, path, **kwargs):
-        ret = self.s3_client.glob(self._expand_path(path), **kwargs)
-        return [self._fold_path(x) for x in ret]
+        s3_resp = self.s3_client.glob(self._expand_path(path), **kwargs)
+        return [self._fold_path(x) for x in s3_resp]
 
     def exists(self, path, **kwargs):
         return self.s3_client.exists(self._expand_path(path), **kwargs)
@@ -134,18 +151,11 @@ class FluidFileSystem:
         return self.s3_client.open(self._expand_path(path), mode, block_size, cache_options, compression, **kwargs)
 
     def listdir(self, path, detail=True, **kwargs):
-        res = self.s3_client.listdir(self._expand_path(path), detail, **kwargs)
-        ret = []
-        for directory in res:
-            x = copy.deepcopy(directory)
-            x['Key'] = self._fold_path(x['Key'])
-            x['name'] = self._fold_path(x['name'])
-            ret.append(x)
-        return ret
+        return self.ls(path, detail, **kwargs)
 
     def stat(self, path, **kwargs):
-        res = self.s3_client.stat(self._expand_path(path), **kwargs)
-        ret = copy.deepcopy(res)
+        s3_resp = self.s3_client.stat(self._expand_path(path), **kwargs)
+        ret = copy.deepcopy(s3_resp)
         ret['name'] = self._fold_path(ret['name'])
         # For stating directory
         if 'Key' in ret:
@@ -155,3 +165,4 @@ class FluidFileSystem:
 
 if __name__ == '__main__':
     fs = FluidFileSystem("sd-dataset", workdir="datasets")
+    print(fs.find("/", detail=True))
