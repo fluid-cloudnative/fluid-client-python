@@ -27,6 +27,9 @@
 import os.path
 
 from fluid.io import FluidFileSystem
+from fluid import FluidClient
+import fluid.models
+import fluid.constants
 from torch.utils import data
 from PIL import Image
 
@@ -87,12 +90,33 @@ class FluidDatasetFolder(FluidMapDataset):
             transform: Optional[Callable] = None,
             target_transform: Optional[Callable] = None,
             is_valid_file: Optional[Callable[[str], bool]] = None,
+            need_warmup: bool = False
     ) -> None:
         super().__init__(dataset_name, root, transform, target_transform)
         start_time = time.time()
         classes, class_to_idx = self.find_classes(self.root)
         print(f"find_classes: {time.time() - start_time}")
         samples = self.make_dataset(self.root, class_to_idx, extensions, is_valid_file)
+
+        if need_warmup:
+            fluid_client = FluidClient()
+            fluid_client.create_data_operation(fluid.models.DataLoad(
+                api_version=fluid.constants.API_VERSION,
+                kind=fluid.constants.DATA_LOAD_KIND,
+                metadata=fluid.models.V1ObjectMeta(
+                    name=f"{dataset_name}-warmup-{time.time()}"
+                ),
+                spec=fluid.models.DataLoadSpec(
+                    dataset=fluid.models.TargetDataset(
+                        namespace=fluid_client.namespace,
+                        name=dataset_name,
+                    ),
+                    target=fluid.models.TargetPath(
+                        path=root,
+                        replicas=1
+                    )
+                )
+            ), wait=False)
 
         self.loader = loader
         self.extension = extensions
@@ -125,7 +149,8 @@ class FluidDatasetFolder(FluidMapDataset):
     def __len__(self) -> int:
         return len(self.samples)
 
-    def _make_samples_for_target_class(self, filesystem, target_dir, target_class, is_valid_file):
+    @staticmethod
+    def _make_samples_for_target_class(filesystem, target_dir, target_class, is_valid_file):
         instances = []
         for path in sorted(filesystem.find(target_dir)):
             if is_valid_file(path):
@@ -248,6 +273,7 @@ class FluidImageFolder(FluidDatasetFolder):
             target_transform: Optional[Callable] = None,
             loader: Callable[[FluidFileSystem, str], Any] = default_loader,
             is_valid_file: Optional[Callable[[str], bool]] = None,
+            need_warmup: bool = False
     ):
         super().__init__(
             dataset_name,
@@ -256,6 +282,7 @@ class FluidImageFolder(FluidDatasetFolder):
             IMG_EXTENSIONS if is_valid_file is None else None,
             transform=transform,
             target_transform=target_transform,
-            is_valid_file=is_valid_file
+            is_valid_file=is_valid_file,
+            need_warmup=need_warmup
         )
         self.imgs = self.samples
