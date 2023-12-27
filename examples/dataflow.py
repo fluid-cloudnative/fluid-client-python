@@ -14,6 +14,7 @@
 import logging
 import sys
 
+from fluid import constants
 from fluid import models
 from fluid import FluidClient
 
@@ -85,8 +86,9 @@ def main():
 
     # Flow example 3: migrate some data to the dataset, preload it and finally process it.
     # Then wait until the flow is completed
-    flow3 = dataset.migrate("/ossdata", "from", models.ExternalStorage(uri="oss://my-bucket/my-data",
-                                                                       encrypt_options=get_encrypt_options())) \
+    flow3 = dataset.migrate("/ossdata", constants.DATA_MIGRATE_DIRECTION_FROM,
+                            models.ExternalStorage(uri="oss://my-bucket/my-data",
+                                                   encrypt_options=get_encrypt_options())) \
         .preload("/ossdata").process(dataset_mountpath="/data", processor=build_data_processor()).run(
         run_id="testflow3")
     flow3.wait()

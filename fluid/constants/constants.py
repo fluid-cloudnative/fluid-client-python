@@ -117,3 +117,6 @@ for kind, params in RUNTIME_PARAMETERS.items():
 
 for kind, params in DATA_OPERATION_PARAMETERS.items():
     FLUID_CRD_PARAMETERS[kind] = params
+
+DATA_MIGRATE_DIRECTION_FROM = "from"
+DATA_MIGRATE_DIRECTION_TO = "to"
