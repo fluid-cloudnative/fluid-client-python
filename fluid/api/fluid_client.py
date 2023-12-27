@@ -260,7 +260,7 @@ class FluidClient(object):
                     raise RuntimeError(
                         f"{data_op.kind} \"{data_op.metadata.namespace}/{data_op.metadata.name}\" failed.")
 
-            poll += 1
+            poll += poll_interval
             time.sleep(poll_interval)
 
         if poll >= poll_timeout:
