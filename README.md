@@ -39,74 +39,67 @@ Please follow the [installation procedure](#installation--usage) and then run th
 
 The following is a code sample which creates a dataset and get its status.
 ```python
-import json
-import time
-import fluid
-from kubernetes import client, config
-from fluid import Dataset, DatasetSpec
+import logging
+import sys
 
-# Initialize kubernetes client
-config.load_kube_config()
-api_instance = client.CustomObjectsApi()
+from kubernetes import client
 
-FLUID_GROUP = "data.fluid.io"
-FLUID_VERSION = "v1alpha1"
+from fluid import FluidClient
+from fluid import constants
+from fluid import models
 
-namespace = "default"
+logger = logging.getLogger("fluidsdk")
+stream_handler = logging.StreamHandler(sys.stdout)
+stream_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+logger.addHandler(stream_handler)
+logger.setLevel(logging.INFO)
 
-dataset = Dataset(
-    api_version="%s/%s" % (FLUID_GROUP, FLUID_VERSION),
-    kind="Dataset",
-    metadata=client.V1ObjectMeta(
-        name="demo",
-        namespace=namespace
-    ),
-    spec=DatasetSpec(
-        mounts=[
-            fluid.Mount(
-                mount_point="https://mirrors.bit.edu.cn/apache/hbase/stable/",
-                name="hbase",
-                path="/",
-            )
-        ]
+
+# Output detailed debug message for fluidsdk
+# logger.setLevel(logging.DEBUG)
+
+def main():
+    fluid_client = FluidClient()
+
+    name = "demo"
+    namespace = "default"
+
+    dataset = models.Dataset(
+        api_version=constants.API_VERSION,
+        kind=constants.DATASET_KIND,
+        metadata=client.V1ObjectMeta(
+            name=name,
+            namespace=namespace
+        ),
+        spec=models.DatasetSpec(
+            mounts=[
+                models.Mount(
+                    mount_point="https://mirrors.bit.edu.cn/apache/hbase/stable/",
+                    name="hbase",
+                    path="/",
+                )
+            ]
+        )
     )
-)
 
-# Create Dataset
-try:
-    api_instance.create_namespaced_custom_object(
-        FLUID_GROUP,
-        FLUID_VERSION,
-        namespace,
-        "datasets",
-        dataset
-    )
-except Exception as e:
-    print("Error when creating dataset: ", e)
-    exit(1)
-
-print("Dataset %s/%s created." % (namespace, dataset.metadata.name))
-
-# Get Dataset's status
-timeout = 300
-for i in range(timeout):
     try:
-        resp = api_instance.get_namespaced_custom_object(
-            FLUID_GROUP,
-            FLUID_VERSION,
-            namespace,
-            "datasets",
-            dataset.metadata.name)
+        fluid_client.create_dataset(dataset)
     except Exception as e:
-        print("Error when getting dataset {}/{}:".format(namespace, dataset.metadata.name), e)
-        continue
+        raise RuntimeError(f"Failed to create dataset: {e}")
 
-    if "status" in resp:
-        print("Dataset phase: {}".format(resp["status"]["phase"]))
-        exit(0)
-    time.sleep(1)
+    logger.info(f"Dataset \"{dataset.metadata.namespace}/{dataset.metadata.name}\" created successfully")
 
-print("Timeout when getting Dataset.")
+    try:
+        dataset = fluid_client.get_dataset(name, namespace)
+    except Exception as e:
+        raise RuntimeError(f"Error when getting dataset \"{namespace}/{name}\": {e}")
+
+    assert type(dataset) == models.Dataset
+    logger.info(f"Dataset \"{namespace}/{name}\"'s phase is: {dataset.status.phase}")
+
+
+if __name__ == '__main__':
+    main()
 ```
 
 ## Documentation For Models
