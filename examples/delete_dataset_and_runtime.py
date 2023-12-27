@@ -25,7 +25,7 @@ logger.addHandler(stream_handler)
 logger.setLevel(logging.INFO)
 
 # Output detailed debug message for fluidsdk
-logger.setLevel(logging.DEBUG)
+# logger.setLevel(logging.DEBUG)
 
 
 def main():
