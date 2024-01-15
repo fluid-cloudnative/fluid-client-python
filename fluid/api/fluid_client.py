@@ -76,14 +76,14 @@ class FluidClient(object):
             api_version=constants.API_VERSION,
             kind=constants.DATASET_KIND,
             metadata=client.V1ObjectMeta(
-                name=mount_name,
+                name=dataset_name,
                 namespace=namespace or self.config.namespace,
             ),
             spec=models.DatasetSpec(
                 mounts=[models.Mount(
                     mount_point=mount_point,
                     path=mount_path,
-                    name=dataset_name,
+                    name=mount_name,
                     options=options,
                     encrypt_options=encrypt_options
                 )],
