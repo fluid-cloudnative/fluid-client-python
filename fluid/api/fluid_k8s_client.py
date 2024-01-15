@@ -284,9 +284,11 @@ class FluidK8sClient(object):
                        **kwargs):
         namespace = namespace or self.namespace
 
-        kwargs = {
-
-        }
+        runtime_type = None
+        obj = self.get_dataset(name, namespace)
+        if len(obj.status.runtimes) > 0:
+            # For now, Fluid only supports one bounded runtime
+            runtime_type = utils.infer_runtime_kind(obj.status.runtimes[0].type)
 
         try:
             self.custom_api.delete_namespaced_custom_object(
@@ -324,7 +326,7 @@ class FluidK8sClient(object):
         logger.debug(f"Dataset \"{namespace}/{name}\" deleted successfully")
 
         if wait_until_cleaned_up:
-            self.delete_runtime(name, runtime_type=None, namespace=namespace,
+            self.delete_runtime(name, runtime_type=runtime_type, namespace=namespace,
                                 wait_until_cleaned_up=wait_until_cleaned_up, timeout=timeout, **kwargs)
 
     def delete_runtime(self, name, runtime_type=None, namespace=None, wait_until_cleaned_up=False,
