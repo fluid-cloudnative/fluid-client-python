@@ -123,26 +123,7 @@ from fluid.models.vineyard_sock_spec import VineyardSockSpec
 from fluid.models.volume_source import VolumeSource
 from fluid.models.waiting_status import WaitingStatus
 
-from fluid.api.fluid_client import FluidK8sClient
+from fluid.api.fluid_k8s_client import FluidK8sClient
+from fluid.api.fluid_client import FluidClient, ClientConfig
 from fluid.constants import constants
 from fluid.api.fluid_dataflow import FluidDataFlow
-
-
-def preload_func(self: Dataset, target_path="/", load_metadata=False):
-    flow = FluidDataFlow(self.metadata.name)
-    return flow.preload(target_path, load_metadata)
-
-
-def migrate_func(self: Dataset, path, migrate_direction, external_storage):
-    flow = FluidDataFlow(self.metadata.name)
-    return flow.migrate(path, migrate_direction, external_storage)
-
-
-def process_func(self: Dataset, dataset_mountpath, processor, sub_path=None):
-    flow = FluidDataFlow(self.metadata.name)
-    return flow.process(dataset_mountpath, processor, sub_path)
-
-
-Dataset.preload = preload_func
-Dataset.migrate = migrate_func
-Dataset.process = process_func

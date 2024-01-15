@@ -1,4 +1,4 @@
-#  Copyright 2023 The Fluid Authors.
+#  Copyright 2024 The Fluid Authors.
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -11,373 +11,266 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
+
 import logging
-import time
-import multiprocessing
 from typing import Optional
 
-from kubernetes import config, client
+from kubernetes import client
 
-from fluid import ApiClient
-from fluid import models
-from fluid.constants import constants
 from fluid.utils import utils
+from fluid.constants import constants
+from fluid import models
+from fluid.api.fluid_k8s_client import FluidK8sClient
+from fluid.api.fluid_dataflow import FluidDataFlow
 
-logger = logging.getLogger("fluidsdk")
+logger = logging.getLogger("FluidClient")
 
 
-class FluidK8sClient(object):
-    def __init__(
-            self,
-            namespace: str = utils.get_default_target_namespace(),
-            default_runtime_kind: str = constants.ALLUXIO_RUNTIME_KIND,
-            kube_config_file: Optional[str] = None,
-            kube_context: Optional[str] = None,
-            kube_client_configuration: Optional[client.Configuration] = None
-    ):
-        if kube_config_file or not utils.is_running_in_k8s():
-            config.load_kube_config(config_file=kube_config_file, context=kube_context)
-        else:
-            config.load_incluster_config()
-
-        k8s_client = client.ApiClient(kube_client_configuration)
-        self.custom_api = client.CustomObjectsApi(k8s_client)
-        self.api_client = ApiClient()
-
+class ClientConfig(object):
+    def __init__(self,
+                 namespace: str = utils.get_default_target_namespace(),
+                 runtime_kind: str = constants.ALLUXIO_RUNTIME_KIND,
+                 kube_config_file: Optional[str] = None,
+                 kube_context: Optional[str] = None,
+                 kube_client_configuration: Optional[client.Configuration] = None):
         self.namespace = namespace
-        if default_runtime_kind not in constants.RUNTIME_PARAMETERS:
-            raise ValueError(
-                f"Default runtime kind must be one of {list(constants.RUNTIME_PARAMETERS.keys())}"
+        self.runtime_kind = utils.infer_runtime_kind(runtime_kind)
+        self.kube_config_file = kube_config_file
+        self.kube_context = kube_context
+        self.kube_client_configuration = kube_client_configuration
+
+
+class FluidClient(object):
+    def __init__(self, config: ClientConfig):
+        if not config:
+            raise ValueError("config should not be None")
+        if not config.namespace:
+            raise ValueError("namespace should not be None")
+        self.config = config
+        self.k8s_client = FluidK8sClient(config.namespace, config.runtime_kind, config.kube_config_file,
+                                         config.kube_context, config.kube_client_configuration)
+
+    def create_dataset(self, dataset_name: str, mount_point: str, mount_path="/", mode="ReadOnly", options=None,
+                       cred_secret_name=None,
+                       cred_secret_options=None, namespace=None,
+                       **kwargs):
+        if options is None:
+            options = {}
+        if cred_secret_options is None:
+            cred_secret_options = {}
+        if mode not in ["ReadWrite", "ReadOnly"]:
+            raise ValueError("mode must be ReadOnly or ReadWrite")
+        if (not cred_secret_name and len(cred_secret_options) != 0) and (
+                cred_secret_name and len(cred_secret_options) == 0):
+            raise ValueError("cred_secret_name and cred_secret_options must be set together")
+
+        encrypt_options = []
+        for k, v in cred_secret_options.items():
+            encrypt_options.append(
+                models.EncryptOption(cred_secret_name, models.EncryptOptionSource(models.SecretKeySelector(k, v))))
+
+        access_mode = "ReadOnlyMany" if mode == "ReadOnly" else "ReadWriteMany"
+        ds = models.Dataset(
+            api_version=constants.API_VERSION,
+            kind=constants.DATASET_KIND,
+            metadata=client.V1ObjectMeta(
+                name=dataset_name,
+                namespace=namespace or self.config.namespace,
+            ),
+            spec=models.DatasetSpec(
+                mounts=[models.Mount(
+                    mount_point=mount_point,
+                    path=mount_path,
+                    name=dataset_name,
+                    options=options,
+                    encrypt_options=encrypt_options
+                )],
+                access_modes=[access_mode],
+                **kwargs
             )
-        self.default_runtime_kind = default_runtime_kind
+        )
+        self.k8s_client.create_dataset(ds)
+        logger.debug(f"Dataset {dataset_name} created")
 
-    def create_dataset(self, dataset: models.Dataset, namespace=None):
-        if not dataset:
-            raise ValueError(f"dataset must be not None")
+    def get_dataset(self, dataset_name: str, namespace=None):
+        obj = self.k8s_client.get_dataset(dataset_name, namespace or self.config.namespace)
+        return FluidDataset(obj.metadata.name, obj.metadata.namespace, obj, self)
 
-        if not isinstance(dataset, models.Dataset):
-            raise ValueError(f"dataset must be of type models.Dataset")
-
-        namespace = namespace or utils.get_obj_namespace(dataset.metadata) or self.namespace
-
+    def cleanup_dataset(self, dataset_name: str, namespace=None, wait=True):
         try:
-            self.custom_api.create_namespaced_custom_object(
-                constants.GROUP,
-                constants.VERSION,
-                namespace,
-                constants.FLUID_CRD_PARAMETERS[constants.DATASET_KIND]["plural"],
-                body=dataset
-            )
-        except multiprocessing.TimeoutError:
-            raise TimeoutError(
-                f"TimeoutError: Timed out when creating dataset \"{namespace}/{dataset.metadata.name}\""
-            )
+            obj = self.k8s_client.get_dataset(dataset_name, namespace or self.config.namespace)
+        except client.ApiException as e:
+            if e.status == 404:
+                return
         except Exception as e:
-            raise RuntimeError(
-                f"RuntimeError: Failed to create dataset \"{namespace}/{dataset.metadata.name}\": {e}"
-            )
+            raise e
+        else:
+            FluidDataset(dataset_name, obj.metadata.namespace, obj, self).clean_up(wait)
 
-        logger.debug(f"Dataset \"{namespace}/{dataset.metadata.name}\" created successfully")
 
-    def create_runtime(self, runtime: constants.RUNTIME_MODELS_TYPE, namespace=None):
-        if not runtime:
-            raise ValueError(f"runtime must be not None")
+class FluidDataset(object):
+    def __init__(self, name: str, namespace: str, dataset_obj: models.Dataset, client: FluidClient):
+        self.name = name
+        self.namespace = namespace
+        self.obj = dataset_obj
+        self.fluid_client = client
 
-        if not isinstance(runtime, constants.RUNTIME_MODELS):
-            raise ValueError(f"runtime must be one of the types: {constants.RUNTIME_MODELS}")
+    def bind_runtime(self, runtime_type=None, replicas=2, cache_capacity_GiB=10, cache_medium="MEM", wait=True,
+                     **kwargs):
+        real_runtime_kind = utils.infer_runtime_kind(runtime_type)
+        if not real_runtime_kind:
+            real_runtime_kind = self.fluid_client.config.runtime_kind
+            logger.warning(
+                f"No runtime_type is given to bind_runtime(), implicitly using {self.fluid_client.config.runtime_kind} from FluidClient")
+        assert real_runtime_kind is not None
 
-        namespace = namespace or utils.get_obj_namespace(runtime.metadata) or self.namespace
-        kind = runtime.kind or self.default_runtime_kind
-        try:
-            self.custom_api.create_namespaced_custom_object(
-                constants.GROUP,
-                constants.VERSION,
-                namespace,
-                constants.RUNTIME_PARAMETERS[kind]["plural"],
-                body=runtime
-            )
-        except multiprocessing.TimeoutError:
-            raise TimeoutError(
-                f"TimeoutError: Timed out when creating runtime \"{namespace}/{runtime.metadata.name}\""
-            )
-        except Exception as e:
-            raise RuntimeError(
-                f"RuntimeError: Failed to create runtime \"{namespace}/{runtime.metadata.name}\": {e}"
-            )
+        if real_runtime_kind == constants.ALLUXIO_RUNTIME_KIND:
+            runtime = self.__default_alluxio_runtime(replicas, cache_capacity_GiB, cache_medium, **kwargs)
+        elif real_runtime_kind == constants.JINDO_RUNTIME_KIND:
+            runtime = self.__default_jindo_runtime(replicas, cache_capacity_GiB, cache_medium, **kwargs)
+        elif real_runtime_kind == constants.JUICEFS_RUNTIME_KIND:
+            runtime = self.__default_juicefs_runtime(replicas, cache_capacity_GiB, cache_medium, **kwargs)
+        elif real_runtime_kind == constants.EFC_RUNTIME_KIND:
+            runtime = self.__default_efc_runtime(replicas, cache_capacity_GiB, cache_medium, **kwargs)
+        else:
+            raise ValueError(f"Unsupported runtime kind {real_runtime_kind}")
 
-        logger.debug(f"{runtime.kind} \"{namespace}/{runtime.metadata.name}\" created successfully")
+        ds = self.fluid_client.k8s_client.get_dataset(self.obj.metadata.name, self.obj.metadata.namespace)
+        assert ds is not None
+        if ds.metadata.uid != self.obj.metadata.uid:
+            raise RuntimeError(f"Dataset {self.name} has a different UID, the dataset may already been cleaned up")
 
-    def create_data_operation(self, data_op: constants.DATA_OPERATION_MODELS_TYPE, namespace=None, wait=False):
-        if not data_op:
-            raise ValueError(f"data_op must be not None")
-        if not isinstance(data_op, constants.DATA_OPERATION_MODELS):
-            raise ValueError(f"data_op must be one of the types: {constants.DATA_OPERATION_MODELS}")
-        if not data_op.kind or len(data_op.kind) == 0:
-            raise ValueError(f"data_op.kind must be not None")
-
-        namespace = namespace or utils.get_obj_namespace(data_op.metadata) or self.namespace
-        kind = data_op.kind
-
-        try:
-            self.custom_api.create_namespaced_custom_object(
-                constants.GROUP,
-                constants.VERSION,
-                namespace,
-                constants.DATA_OPERATION_PARAMETERS[kind]["plural"],
-                body=data_op
-            )
-        except multiprocessing.TimeoutError:
-            raise TimeoutError(
-                f"TimeoutError: Timed out when creating data operation \"{namespace}/{data_op.metadata.name}\""
-            )
-        except Exception as e:
-            raise RuntimeError(
-                f"RuntimeError: Failed to create data operation \"{namespace}/{data_op.metadata.name}\": {e}"
-            )
-
-        logger.debug(f"{data_op.kind} \"{namespace}/{data_op.metadata.name}\" created successfully")
-
+        self.fluid_client.k8s_client.create_runtime(runtime, namespace=self.obj.metadata.namespace)
         if wait:
-            self.wait_data_operation_completed(data_op.metadata.name, data_op.kind, namespace)
+            self.fluid_client.k8s_client.wait_dataset_bound(self.name, self.obj.metadata.namespace)
 
-    def get_dataset(self, name, namespace=None, timeout=constants.DEFAULT_TIMEOUT) -> models.Dataset:
-        namespace = namespace or self.namespace
-
+    def clean_up(self, wait=True):
         try:
-            thread = self.custom_api.get_namespaced_custom_object(
-                constants.GROUP,
-                constants.VERSION,
-                namespace,
-                constants.FLUID_CRD_PARAMETERS[constants.DATASET_KIND]["plural"],
-                name,
-                async_req=True
-            )
-            response = utils.FakeResponse(thread.get(timeout=timeout))
-            dataset = self.api_client.deserialize(response, models.Dataset)
-        except multiprocessing.TimeoutError:
-            raise TimeoutError(
-                f"TimeoutError: Timed out when getting dataset \"{namespace}/{name}\""
-            )
+            ds = self.fluid_client.k8s_client.get_dataset(self.obj.metadata.name, self.obj.metadata.namespace)
         except client.ApiException as e:
-            raise e
-        except Exception as e:
-            raise RuntimeError(
-                f"RuntimeError: Failed to get dataset \"{namespace}/{name}\": {e}"
-            )
-        logger.debug(f"Dataset \"{namespace}/{dataset.metadata.name}\" retrieved successfully")
-        return dataset
+            if e.status == 404:
+                return
+        else:
+            if ds.metadata.uid != self.obj.metadata.uid:
+                return
+            try:
+                self.fluid_client.k8s_client.delete_dataset(self.obj.metadata.name, self.obj.metadata.namespace,
+                                                            wait_until_cleaned_up=wait, timeout=30)
+            except TimeoutError:
+                logger.warning(f"Timeout when cleaning up dataset {self.name}, there may be some pods relying on the "
+                               f"dataset that blocks the deletion, please check")
 
-    def get_runtime(self, name, runtime_type=None, namespace=None,
-                    timeout=constants.DEFAULT_TIMEOUT) -> constants.RUNTIME_MODELS_TYPE:
-        namespace = namespace or self.namespace
-        runtime_kind = utils.infer_runtime_kind(runtime_type) or self.default_runtime_kind
-        if runtime_kind is None:
-            raise ValueError(
-                f"runtime_type is not supported, supported types: {list(constants.RUNTIME_PARAMETERS.keys())}")
-        try:
-            thread = self.custom_api.get_namespaced_custom_object(
-                constants.GROUP,
-                constants.VERSION,
-                namespace,
-                constants.RUNTIME_PARAMETERS[runtime_kind]["plural"],
-                name,
-                async_req=True
+    def preload(self, target_path="/", load_metadata=False):
+        flow = FluidDataFlow(self.name, self.namespace)
+        return flow.preload(target_path, load_metadata)
+
+    def migrate(self, path, migrate_direction, external_storage):
+        flow = FluidDataFlow(self.name, self.namespace)
+        return flow.migrate(path, migrate_direction, external_storage)
+
+    def process(self, dataset_mountpath, processor, sub_path=None):
+        flow = FluidDataFlow(self.name, self.namespace)
+        return flow.process(dataset_mountpath, processor, sub_path)
+
+    def __default_alluxio_runtime(self, replicas, cache_capacity_GiB, cache_medium, **kwargs):
+        runtime = models.AlluxioRuntime(
+            api_version=constants.API_VERSION,
+            kind=constants.ALLUXIO_RUNTIME_KIND,
+            metadata=client.V1ObjectMeta(
+                name=self.name,
+                namespace=self.namespace,
+            ),
+            spec=models.AlluxioRuntimeSpec(
+                replicas=replicas,
+                tieredstore=models.TieredStore(
+                    levels=[
+                        models.Level(
+                            mediumtype=cache_medium,
+                            path="/var/lib/fluid/cache",
+                            quota=f"{cache_capacity_GiB}Gi",
+                            volume_type="emptyDir"
+                        )
+                    ]
+                ),
+                **kwargs
             )
-            response = utils.FakeResponse(thread.get(timeout=timeout))
-            runtime = self.api_client.deserialize(response, constants.RUNTIME_PARAMETERS[runtime_kind]["model"])
-        except multiprocessing.TimeoutError:
-            raise TimeoutError(
-                f"TimeoutError: Timed out when getting runtime \"{namespace}/{name}\""
-            )
-        except client.ApiException as e:
-            raise e
-        except Exception as e:
-            raise RuntimeError(
-                f"RuntimeError: Failed to get runtime \"{namespace}/{name}\": {e}"
-            )
-        logger.debug(f"{runtime.kind} \"{namespace}/{runtime.metadata.name}\" retrieved successfully")
+        )
 
         return runtime
 
-    def get_data_operation(self, name, data_op_type, namespace=None, timeout=constants.DEFAULT_TIMEOUT):
-        namespace = namespace or self.namespace
-        data_op_kind = utils.infer_data_operation_kind(data_op_type)
-        if data_op_kind is None:
-            raise ValueError(
-                f"data_op_type is not supported, supported types: {list(constants.DATA_OPERATION_PARAMETERS.keys())}")
-
-        try:
-            thread = self.custom_api.get_namespaced_custom_object(
-                constants.GROUP,
-                constants.VERSION,
-                namespace,
-                constants.DATA_OPERATION_PARAMETERS[data_op_kind]["plural"],
-                name,
-                async_req=True
-            )
-            response = utils.FakeResponse(thread.get(timeout=timeout))
-            data_op = self.api_client.deserialize(response, constants.DATA_OPERATION_PARAMETERS[data_op_kind]["model"])
-        except multiprocessing.TimeoutError:
-            raise TimeoutError(
-                f"TimeoutError: Timed out when getting data operation \"{namespace}/{name}\""
-            )
-        except client.ApiException as e:
-            raise e
-        except Exception as e:
-            raise RuntimeError(
-                f"RuntimeError: Failed to get data operation \"{namespace}/{name}\": {e}"
-            )
-        logger.debug(f"{data_op.kind} \"{namespace}/{data_op.metadata.name}\" retrieved successfully")
-        return data_op
-
-    def wait_data_operation_completed(self, name, data_op_type, namespace=None,
-                                      poll_timeout=constants.DEFAULT_POLL_TIMEOUT,
-                                      poll_interval=constants.DEFAULT_POLL_INTERVAL):
-        namespace = namespace or self.namespace
-        data_op_kind = utils.infer_data_operation_kind(data_op_type)
-
-        if data_op_kind is None:
-            raise ValueError(
-                f"data_op_type is not supported, supported types: {list(constants.DATA_OPERATION_PARAMETERS.keys())}")
-
-        poll = 0
-        while poll < poll_timeout:
-            data_op = self.get_data_operation(name, data_op_type, namespace)
-            if not data_op.status:
-                logger.warning(f"{data_op.kind} \"{data_op.metadata.namespace}/{data_op.metadata.name}\"'s current "
-                               f"status is None, this may happen when the {data_op.kind} is just created. Temporarily"
-                               f" ignoring it.")
-            else:
-                phase = data_op.status.phase
-                logger.debug(
-                    f"{data_op.kind} \"{data_op.metadata.namespace}/{data_op.metadata.name}\"'s current phase: {phase}")
-                if phase == "Complete":
-                    logger.debug(
-                        f"{data_op.kind} \"{data_op.metadata.namespace}/{data_op.metadata.name}\" completed successfully after {data_op.status.duration}")
-                    break
-                if phase == "Failed":
-                    logger.debug(f"{data_op.kind} \"{data_op.metadata.namespace}/{data_op.metadata.name}\" failed.")
-                    raise RuntimeError(
-                        f"{data_op.kind} \"{data_op.metadata.namespace}/{data_op.metadata.name}\" failed.")
-
-            poll += poll_interval
-            time.sleep(poll_interval)
-
-        if poll >= poll_timeout:
-            raise TimeoutError(f"TimeoutError: Timed out when waiting data operation \"{namespace}/{name}\"")
-
-    def delete_dataset(self, name, namespace=None, wait_until_cleaned_up=False, timeout=constants.DEFAULT_TIMEOUT,
-                       **kwargs):
-        namespace = namespace or self.namespace
-
-        kwargs = {
-
-        }
-
-        try:
-            self.custom_api.delete_namespaced_custom_object(
-                constants.GROUP,
-                constants.VERSION,
-                namespace,
-                constants.FLUID_CRD_PARAMETERS[constants.DATASET_KIND]["plural"],
-                name,
+    def __default_jindo_runtime(self, replicas, cache_capacity_GiB, cache_medium, **kwargs):
+        runtime = models.JindoRuntime(
+            api_version=constants.API_VERSION,
+            kind=constants.JINDO_RUNTIME_KIND,
+            metadata=client.V1ObjectMeta(
+                name=self.name,
+                namespace=self.namespace,
+            ),
+            spec=models.JindoRuntimeSpec(
+                replicas=replicas,
+                tieredstore=models.TieredStore(
+                    levels=[
+                        models.Level(
+                            mediumtype=cache_medium,
+                            path="/var/lib/fluid/cache",
+                            quota=f"{cache_capacity_GiB}Gi",
+                            volume_type="emptyDir"
+                        )
+                    ]
+                ),
                 **kwargs
             )
-        except multiprocessing.TimeoutError:
-            raise TimeoutError(
-                f"TimeoutError: Timed out when deleting dataset \"{namespace}/{name}\""
-            )
-        except client.ApiException as e:
-            if e.status == 404:
-                logger.warning(f"Dataset \"{namespace}/{name}\" not found. Maybe already deleted.")
-        except Exception as e:
-            raise RuntimeError(f"Failed to delete dataset \"{namespace}/{name}\": {e}.")
+        )
 
-        if wait_until_cleaned_up:
-            poll = 0
-            while poll < timeout:
-                try:
-                    self.get_dataset(name, namespace)
-                    poll += 1
-                    time.sleep(1)
-                except client.ApiException as e:
-                    if e.status == 404:
-                        break
+        return runtime
 
-            if poll >= timeout:
-                raise TimeoutError(f"TimeoutError: Timed out when waiting dataset \"{namespace}/{name}\" deleted")
-
-        logger.debug(f"Dataset \"{namespace}/{name}\" deleted successfully")
-
-        if wait_until_cleaned_up:
-            self.delete_runtime(name, runtime_type=None, namespace=namespace,
-                                wait_until_cleaned_up=wait_until_cleaned_up, timeout=timeout, **kwargs)
-
-    def delete_runtime(self, name, runtime_type=None, namespace=None, wait_until_cleaned_up=False,
-                       timeout=constants.DEFAULT_TIMEOUT, **kwargs):
-        namespace = namespace or self.namespace
-        runtime_kind = utils.infer_runtime_kind(runtime_type) or self.default_runtime_kind
-        if runtime_kind is None:
-            raise ValueError(
-                f"runtime_type is not supported, supported types: {list(constants.RUNTIME_PARAMETERS.keys())}")
-
-        try:
-            self.custom_api.delete_namespaced_custom_object(
-                constants.GROUP,
-                constants.VERSION,
-                namespace,
-                constants.RUNTIME_PARAMETERS[runtime_kind]["plural"],
-                name,
+    def __default_juicefs_runtime(self, replicas, cache_capacity_GiB, cache_medium, **kwargs):
+        runtime = models.JuiceFSRuntime(
+            api_version=constants.API_VERSION,
+            kind=constants.JUICEFS_RUNTIME_KIND,
+            metadata=client.V1ObjectMeta(
+                name=self.name,
+                namespace=self.namespace,
+            ),
+            spec=models.JuiceFSRuntimeSpec(
+                replicas=replicas,
+                tieredstore=models.TieredStore(
+                    levels=[
+                        models.Level(
+                            mediumtype=cache_medium,
+                            path="/var/lib/fluid/cache",
+                            quota=f"{cache_capacity_GiB}Gi",
+                            volume_type="emptyDir"
+                        )
+                    ]
+                ),
                 **kwargs
             )
-        except multiprocessing.TimeoutError:
-            raise TimeoutError(
-                f"TimeoutError: Timed out when deleting runtime \"{namespace}/{name}\""
-            )
-        except client.ApiException as e:
-            if e.status == 404:
-                logger.warning(f"{runtime_kind} \"{namespace}/{name}\" not found. Maybe already deleted.")
-        except Exception:
-            raise RuntimeError(f"Failed to delete runtime \"{namespace}/{name}\".")
+        )
 
-        if wait_until_cleaned_up:
-            poll = 0
-            while poll < timeout:
-                try:
-                    self.get_runtime(name, runtime_type=runtime_kind, namespace=namespace)
-                    poll += 1
-                    time.sleep(1)
-                except client.ApiException as e:
-                    if e.status == 404:
-                        break
-            if poll >= timeout:
-                raise TimeoutError(f"TimeoutError: Timed out when waiting runtime \"{namespace}/{name}\" deleted")
+        return runtime
 
-        logger.debug(f"{runtime_kind} \"{namespace}/{name}\" deleted successfully")
-
-    def delete_data_operation(self, name, data_op_type, namespace=None, **kwargs):
-        namespace = namespace or self.namespace
-        data_op_kind = utils.infer_data_operation_kind(data_op_type)
-        if data_op_kind is None:
-            raise ValueError(
-                f"data_op_type is not supported, supported types: {list(constants.DATA_OPERATION_PARAMETERS.keys())}")
-
-        try:
-            self.custom_api.delete_namespaced_custom_object(
-                constants.GROUP,
-                constants.VERSION,
-                namespace,
-                constants.DATA_OPERATION_PARAMETERS[data_op_kind]["plural"],
-                name,
+    def __default_efc_runtime(self, replicas, cache_capacity_GiB, cache_medium, **kwargs):
+        runtime = models.EFCRuntime(
+            api_version=constants.API_VERSION,
+            kind=constants.EFC_RUNTIME_KIND,
+            metadata=client.V1ObjectMeta(
+                name=self.name,
+                namespace=self.namespace,
+            ),
+            spec=models.EFCRuntimeSpec(
+                replicas=replicas,
+                tieredstore=models.TieredStore(
+                    levels=[
+                        models.Level(
+                            mediumtype=cache_medium,
+                            path="/var/lib/fluid/cache",
+                            quota=f"{cache_capacity_GiB}Gi",
+                            volume_type="emptyDir"
+                        )
+                    ]
+                ),
                 **kwargs
             )
-        except multiprocessing.TimeoutError:
-            raise TimeoutError(
-                f"TimeoutError: Timed out when deleting data operation \"{namespace}/{name}\""
-            )
-        except client.ApiException as e:
-            if e.status == 404:
-                logger.warning(f"{data_op_kind} \"{namespace}/{name}\" not found. Maybe already deleted.")
-        except Exception:
-            raise RuntimeError(f"Failed to delete data operation \"{namespace}/{name}\".")
-        logger.debug(f"{data_op_kind} \"{namespace}/{name}\" deleted successfully")
+        )
+        return runtime
