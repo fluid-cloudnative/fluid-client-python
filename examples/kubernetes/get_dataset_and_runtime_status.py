@@ -28,7 +28,7 @@ def init_logger(logger_name, logger_level):
 # Example for data experts like data scientists and data engineers.
 def main():
     global logger
-    init_logger("FluidClient", logging.INFO)
+    init_logger("fluidsdk", logging.INFO)
 
     client_config = ClientConfig()
     fluid_client = FluidClient(client_config)

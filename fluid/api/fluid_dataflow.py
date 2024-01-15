@@ -21,7 +21,7 @@ from kubernetes import client
 
 from typing import List, Dict
 
-logger = logging.getLogger("FluidDataFlow")
+logger = logging.getLogger("fluidsdk")
 
 
 class FluidDataFlow(object):

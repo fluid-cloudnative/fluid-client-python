@@ -56,7 +56,7 @@ def main_k8s_client():
 # Example for data experts like data scientists and data engineers.
 def main():
     global logger
-    init_logger("FluidClient", logging.INFO)
+    init_logger("fluidsdk", logging.INFO)
 
     client_config = ClientConfig(runtime_kind=constants.ALLUXIO_RUNTIME_KIND)
     fluid_client = FluidClient(client_config)

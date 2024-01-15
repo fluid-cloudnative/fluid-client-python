@@ -23,7 +23,7 @@ from fluid import models
 from fluid.api.fluid_k8s_client import FluidK8sClient
 from fluid.api.fluid_dataflow import FluidDataFlow
 
-logger = logging.getLogger("FluidClient")
+logger = logging.getLogger("fluidsdk")
 
 
 class ClientConfig(object):
