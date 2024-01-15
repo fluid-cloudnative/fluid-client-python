@@ -21,7 +21,7 @@ from kubernetes import client
 
 from typing import List, Dict
 
-logger = logging.getLogger("fluidsdk")
+logger = logging.getLogger("FluidDataFlow")
 
 
 class FluidDataFlow(object):
@@ -51,9 +51,11 @@ class FluidDataFlow(object):
     def __init__(
             self,
             dataset_name,
+            dataset_namespace,
     ):
         self.fluid_client = FluidK8sClient()
         self.dataset_name = dataset_name
+        self.dataset_namespace = dataset_namespace
         self.flow_ops = []
 
     def preload(self, target_path: str = "/", load_metadata: bool = False):
@@ -78,14 +80,14 @@ class FluidDataFlow(object):
             kind=constants.DATA_LOAD_KIND,
             metadata=client.V1ObjectMeta(
                 name=f"<flow_name_placeholder>-step{len(self.flow_ops) + 1}",
-                namespace=self.fluid_client.namespace,
+                namespace=self.dataset_namespace,
 
             ),
             spec=models.DataLoadSpec(
                 load_metadata=load_metadata,
                 dataset=models.TargetDataset(
                     name=self.dataset_name,
-                    namespace=self.fluid_client.namespace
+                    namespace=self.dataset_namespace
                 ),
                 target=[]
             )
@@ -134,7 +136,7 @@ class FluidDataFlow(object):
                 to=models.DataToMigrate(
                     dataset=models.DatasetToMigrate(
                         name=self.dataset_name,
-                        namespace=self.fluid_client.namespace,
+                        namespace=self.dataset_namespace,
                         path=path
                     )
                 )
@@ -147,7 +149,7 @@ class FluidDataFlow(object):
                 _from=models.DataToMigrate(
                     dataset=models.DatasetToMigrate(
                         name=self.dataset_name,
-                        namespace=self.fluid_client.namespace,
+                        namespace=self.dataset_namespace,
                         path=path
                     )
                 )
@@ -158,7 +160,7 @@ class FluidDataFlow(object):
             kind=constants.DATA_MIGRATE_KIND,
             metadata=client.V1ObjectMeta(
                 name=f"<flow_name_placeholder>-step{len(self.flow_ops) + 1}",
-                namespace=self.fluid_client.namespace,
+                namespace=self.dataset_namespace,
             ),
             spec=spec
         )
@@ -191,12 +193,12 @@ class FluidDataFlow(object):
             kind=constants.DATA_PROCESS_KIND,
             metadata=client.V1ObjectMeta(
                 name=f"<flow_name_placeholder>-step{len(self.flow_ops) + 1}",
-                namespace=self.fluid_client.namespace,
+                namespace=self.dataset_namespace,
             ),
             spec=models.DataProcessSpec(
                 dataset=models.TargetDatasetWithMountPath(
                     name=self.dataset_name,
-                    namespace=self.fluid_client.namespace,
+                    namespace=self.dataset_namespace,
                     mount_path=dataset_mountpath,
                     sub_path=sub_path
                 ),
