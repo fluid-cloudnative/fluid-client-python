@@ -144,6 +144,32 @@ class FluidDataset(object):
         if wait:
             self.fluid_client.k8s_client.wait_dataset_bound(self.name, self.obj.metadata.namespace)
 
+    def report_status(self, status_type: str = "cache"):
+        pass
+        available_status_type = ["mount", "cache", "binding_status", "full"]
+        if status_type not in available_status_type:
+            raise ValueError(f"status_type must be one of {available_status_type}")
+
+        self.obj = self.fluid_client.k8s_client.get_dataset(self.obj.metadata.name, self.obj.metadata.namespace)
+        if not self.obj.status:
+            return None
+
+        if status_type == "mount":
+            return self.obj.spec.mounts
+        if status_type == "cache":
+            cache_states = self.obj.status.cache_states
+            cache_states["dataset total size"] = self.obj.status.ufs_total or ""
+            cache_states["dataset file num"] = self.obj.status.file_num or ""
+            return cache_states
+        if status_type == "binding_status":
+            binding_status = {
+                "phase": self.obj.status.phase,
+                "runtimes": self.obj.status.runtimes or []
+            }
+            return binding_status
+        if status_type == "full":
+            return self.obj.status
+
     def clean_up(self, wait=True):
         try:
             ds = self.fluid_client.k8s_client.get_dataset(self.obj.metadata.name, self.obj.metadata.namespace)
