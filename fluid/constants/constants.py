@@ -16,7 +16,7 @@ from typing import Union
 
 from fluid import models
 
-DEFAULT_TIMEOUT = 120
+DEFAULT_TIMEOUT = 300
 
 DEFAULT_POLL_TIMEOUT = 600
 DEFAULT_POLL_INTERVAL = 3

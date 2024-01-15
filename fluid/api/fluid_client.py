@@ -183,7 +183,7 @@ class FluidDataset(object):
                 return
             try:
                 self.fluid_client.k8s_client.delete_dataset(self.obj.metadata.name, self.obj.metadata.namespace,
-                                                            wait_until_cleaned_up=wait, timeout=30)
+                                                            wait_until_cleaned_up=wait)
             except TimeoutError:
                 logger.warning(f"Timeout when cleaning up dataset {self.name}, there may be some pods relying on the "
                                f"dataset that blocks the deletion, please check")
