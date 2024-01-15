@@ -15,20 +15,26 @@
 import logging
 import sys
 
-from fluid import FluidK8sClient
+from fluid import FluidK8sClient, FluidClient, ClientConfig
 from fluid import constants
 
-logger = logging.getLogger("fluidsdk")
-stream_handler = logging.StreamHandler(sys.stdout)
-stream_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
-logger.addHandler(stream_handler)
-logger.setLevel(logging.INFO)
-
-# Output detailed debug message for fluidsdk
-# logger.setLevel(logging.DEBUG)
+logger = logging.getLogger("")
 
 
-def main():
+def init_logger(logger_name, logger_level):
+    global logger
+    logger = logging.getLogger(logger_name)
+    stream_handler = logging.StreamHandler(sys.stdout)
+    stream_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+    logger.addHandler(stream_handler)
+    logger.setLevel(logger_level)
+
+
+# Example for Kubernetes experts who is familiar with YAML-like APIs.
+def main_k8s_client():
+    global logger
+    init_logger("FluidK8sClient", logging.INFO)
+
     # Set default_runtime_kind to enable wait_until_cleaned_up=True when deleting dataset
     fluid_client = FluidK8sClient(default_runtime_kind=constants.ALLUXIO_RUNTIME_KIND)
 
@@ -47,5 +53,23 @@ def main():
     logger.info(f"Dataset \"{namespace}/{name}\" and Runtime \"{namespace}/{name}\" deleted successfully")
 
 
+# Example for data experts like data scientists and data engineers.
+def main():
+    global logger
+    init_logger("FluidClient", logging.INFO)
+
+    client_config = ClientConfig(runtime_kind=constants.ALLUXIO_RUNTIME_KIND)
+    fluid_client = FluidClient(client_config)
+
+    logger.info("Deleting dataset \"demo\"...")
+    try:
+        fluid_client.cleanup_dataset("demo", wait=True)
+    except Exception as e:
+        raise RuntimeError(f"Failed to delete dataset: {e}")
+
+    logger.info(f"Dataset \"demo\" cleaned up successfully")
+
+
 if __name__ == '__main__':
     main()
+    # main_k8s_client()

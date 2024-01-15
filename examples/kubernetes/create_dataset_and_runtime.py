@@ -3,21 +3,53 @@ import sys
 
 from kubernetes import client
 
-from fluid import FluidK8sClient
+from fluid import FluidK8sClient, FluidClient, ClientConfig
 from fluid import constants
 from fluid import models
 
-logger = logging.getLogger("fluidsdk")
-stream_handler = logging.StreamHandler(sys.stdout)
-stream_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
-logger.addHandler(stream_handler)
-logger.setLevel(logging.INFO)
+logger = logging.getLogger("")
 
 
-# Output detailed debug message for fluidsdk
-# logger.setLevel(logging.DEBUG)
+def init_logger(logger_name, logger_level):
+    global logger
+    logger = logging.getLogger(logger_name)
+    stream_handler = logging.StreamHandler(sys.stdout)
+    stream_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+    logger.addHandler(stream_handler)
+    logger.setLevel(logger_level)
 
+
+# Example for data experts like data scientists and data engineers.
 def main():
+    global logger
+    init_logger("FluidClient", logging.INFO)
+
+    client_config = ClientConfig()
+    fluid_client = FluidClient(client_config)
+
+    dataset_name = "demo"
+    try:
+        fluid_client.create_dataset(dataset_name, "https://mirrors.bit.edu.cn/apache/hbase/stable/", "/hbase")
+    except Exception as e:
+        raise RuntimeError("f""Failed to create dataset: {e}")
+
+    logger.info(f"Dataset \"{dataset_name}\" created successfully")
+
+    try:
+        dataset = fluid_client.get_dataset(dataset_name)
+    except Exception as e:
+        raise RuntimeError(f"Failed to get dataset: {e}")
+
+    logger.info(f"Binding AlluxioRuntime to dataset \"{dataset_name}\"...")
+    dataset.bind_runtime(runtime_type="alluxio", replicas=1, cache_medium="MEM", cache_capacity_GiB=2, wait=True)
+    logger.info(f"AlluxioRuntime created and bound to dataset \"{dataset_name}\", cache engine is now ready")
+
+
+# Example for Kubernetes experts who is familiar with YAML-like APIs.
+def main_k8s_client():
+    global logger
+    init_logger("FluidK8sClient", logging.INFO)
+
     fluid_client = FluidK8sClient()
 
     dataset = models.Dataset(
@@ -80,3 +112,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+    # main_k8s_client()
