@@ -50,7 +50,8 @@ class FluidClient(object):
         self.k8s_client = FluidK8sClient(config.namespace, config.runtime_kind, config.kube_config_file,
                                          config.kube_context, config.kube_client_configuration)
 
-    def create_dataset(self, dataset_name: str, mount_point: str, mount_path="/", mode="ReadOnly", options=None,
+    def create_dataset(self, dataset_name: str, mount_name: str, mount_point: str, mount_path="", mode="ReadOnly",
+                       options=None,
                        cred_secret_name=None,
                        cred_secret_options=None, namespace=None,
                        **kwargs):
@@ -75,7 +76,7 @@ class FluidClient(object):
             api_version=constants.API_VERSION,
             kind=constants.DATASET_KIND,
             metadata=client.V1ObjectMeta(
-                name=dataset_name,
+                name=mount_name,
                 namespace=namespace or self.config.namespace,
             ),
             spec=models.DatasetSpec(

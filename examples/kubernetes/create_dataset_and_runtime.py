@@ -29,7 +29,7 @@ def main():
 
     dataset_name = "demo"
     try:
-        fluid_client.create_dataset(dataset_name, "https://mirrors.bit.edu.cn/apache/hbase/stable/", "/hbase")
+        fluid_client.create_dataset(dataset_name, "hbase", "https://mirrors.bit.edu.cn/apache/hbase/stable/", "/hbase")
     except Exception as e:
         raise RuntimeError("f""Failed to create dataset: {e}")
 
