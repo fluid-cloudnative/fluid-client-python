@@ -214,7 +214,9 @@ class FluidDataset(object):
                             mediumtype=cache_medium,
                             path="/var/lib/fluid/cache",
                             quota=f"{cache_capacity_GiB}Gi",
-                            volume_type="emptyDir"
+                            volume_type="emptyDir",
+                            high="0.99",
+                            low="0.95"
                         )
                     ]
                 ),
@@ -240,7 +242,9 @@ class FluidDataset(object):
                             mediumtype=cache_medium,
                             path="/var/lib/fluid/cache",
                             quota=f"{cache_capacity_GiB}Gi",
-                            volume_type="emptyDir"
+                            volume_type="emptyDir",
+                            high="0.99",
+                            low="0.95"
                         )
                     ]
                 ),
@@ -266,7 +270,8 @@ class FluidDataset(object):
                             mediumtype=cache_medium,
                             path="/var/lib/fluid/cache",
                             quota=f"{cache_capacity_GiB}Gi",
-                            volume_type="emptyDir"
+                            volume_type="emptyDir",
+                            low="0.05"
                         )
                     ]
                 ),
