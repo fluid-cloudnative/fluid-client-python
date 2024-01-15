@@ -65,9 +65,10 @@ class FluidClient(object):
             raise ValueError("cred_secret_name and cred_secret_options must be set together")
 
         encrypt_options = []
-        for k, v in cred_secret_options.items():
+        for opt_key, secret_key in cred_secret_options.items():
             encrypt_options.append(
-                models.EncryptOption(cred_secret_name, models.EncryptOptionSource(models.SecretKeySelector(k, v))))
+                models.EncryptOption(opt_key, models.EncryptOptionSource(
+                    models.SecretKeySelector(secret_key, cred_secret_name))))
 
         access_mode = "ReadOnlyMany" if mode == "ReadOnly" else "ReadWriteMany"
         ds = models.Dataset(
