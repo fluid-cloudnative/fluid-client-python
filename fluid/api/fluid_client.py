@@ -90,7 +90,7 @@ class FluidClient(object):
             )
         )
         self.k8s_client.create_dataset(ds)
-        logger.debug(f"Dataset {dataset_name} created")
+        logger.debug(f"Dataset \"{namespace or self.config.namespace}/{dataset_name}\" created")
 
     def get_dataset(self, dataset_name: str, namespace=None):
         obj = self.k8s_client.get_dataset(dataset_name, namespace or self.config.namespace)
