@@ -14,7 +14,7 @@
 import copy
 import logging
 
-from fluid import FluidClient
+from fluid import FluidK8sClient
 from fluid import models
 from fluid import constants
 from kubernetes import client
@@ -41,8 +41,8 @@ class FluidDataFlow(object):
 
     Examples
     --------
-    >>> from fluid import FluidClient
-    >>> fluid_client = FluidClient()
+    >>> from fluid import FluidK8sClient
+    >>> fluid_client = FluidK8sClient()
     >>> ds = fluid_client.get_dataset(name="my_dataset")
     >>> flow_handle = ds.migrate(...).preload(...).process(...).run(run_id="my_flow")
     >>> flow_handle.wait() # wait until the flow is finished
@@ -52,7 +52,7 @@ class FluidDataFlow(object):
             self,
             dataset_name,
     ):
-        self.fluid_client = FluidClient()
+        self.fluid_client = FluidK8sClient()
         self.dataset_name = dataset_name
         self.flow_ops = []
 
@@ -264,7 +264,7 @@ class FlowHandle:
     """
 
     def __init__(self, run_id, flow_steps):
-        self.fluid_client = FluidClient()
+        self.fluid_client = FluidK8sClient()
         self.run_id = run_id
         self.flow_steps = flow_steps
 

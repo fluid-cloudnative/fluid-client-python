@@ -15,7 +15,7 @@
 import logging
 import sys
 
-from fluid import FluidClient
+from fluid import FluidK8sClient
 from fluid import constants
 
 logger = logging.getLogger("fluidsdk")
@@ -30,7 +30,7 @@ logger.setLevel(logging.INFO)
 
 def main():
     # Set default_runtime_kind to enable wait_until_cleaned_up=True when deleting dataset
-    fluid_client = FluidClient(default_runtime_kind=constants.ALLUXIO_RUNTIME_KIND)
+    fluid_client = FluidK8sClient(default_runtime_kind=constants.ALLUXIO_RUNTIME_KIND)
 
     name = "demo"
     namespace = "default"

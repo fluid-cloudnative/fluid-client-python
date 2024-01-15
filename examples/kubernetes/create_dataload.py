@@ -3,7 +3,7 @@ import sys
 
 from kubernetes import client
 
-from fluid import FluidClient
+from fluid import FluidK8sClient
 from fluid import constants
 from fluid import models
 
@@ -19,7 +19,7 @@ logger.setLevel(logging.INFO)
 
 
 def create_dataload():
-    fluid_client = FluidClient()
+    fluid_client = FluidK8sClient()
 
     dataload = models.DataLoad(
         api_version=constants.API_VERSION,
@@ -49,7 +49,7 @@ def create_dataload():
 
 
 def create_dataload_and_wait_for_completion():
-    fluid_client = FluidClient()
+    fluid_client = FluidK8sClient()
 
     dataload = models.DataLoad(
         api_version=constants.API_VERSION,

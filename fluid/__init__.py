@@ -123,7 +123,7 @@ from fluid.models.vineyard_sock_spec import VineyardSockSpec
 from fluid.models.volume_source import VolumeSource
 from fluid.models.waiting_status import WaitingStatus
 
-from fluid.api.fluid_client import FluidClient
+from fluid.api.fluid_client import FluidK8sClient
 from fluid.constants import constants
 from fluid.api.fluid_dataflow import FluidDataFlow
 

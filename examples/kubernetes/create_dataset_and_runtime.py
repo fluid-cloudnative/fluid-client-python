@@ -3,7 +3,7 @@ import sys
 
 from kubernetes import client
 
-from fluid import FluidClient
+from fluid import FluidK8sClient
 from fluid import constants
 from fluid import models
 
@@ -18,7 +18,7 @@ logger.setLevel(logging.INFO)
 # logger.setLevel(logging.DEBUG)
 
 def main():
-    fluid_client = FluidClient()
+    fluid_client = FluidK8sClient()
 
     dataset = models.Dataset(
         api_version=constants.API_VERSION,

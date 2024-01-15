@@ -26,7 +26,7 @@ from fluid.utils import utils
 logger = logging.getLogger("fluidsdk")
 
 
-class FluidClient(object):
+class FluidK8sClient(object):
     def __init__(
             self,
             namespace: str = utils.get_default_target_namespace(),

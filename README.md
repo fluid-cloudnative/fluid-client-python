@@ -38,13 +38,14 @@ import fluid
 Please follow the [installation procedure](#installation--usage) and then run the following:
 
 The following is a code sample which creates a dataset and get its status.
+
 ```python
 import logging
 import sys
 
 from kubernetes import client
 
-from fluid import FluidClient
+from fluid import FluidK8sClient
 from fluid import constants
 from fluid import models
 
@@ -59,7 +60,7 @@ logger.setLevel(logging.INFO)
 # logger.setLevel(logging.DEBUG)
 
 def main():
-    fluid_client = FluidClient()
+    fluid_client = FluidK8sClient()
 
     name = "demo"
     namespace = "default"

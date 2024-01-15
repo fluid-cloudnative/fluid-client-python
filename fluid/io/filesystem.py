@@ -14,7 +14,7 @@
 import copy
 
 import s3fs
-from fluid.api.fluid_client import FluidClient
+from fluid.api.fluid_client import FluidK8sClient
 from fluid.utils import utils as fluidutils
 from fluid import constants
 from kubernetes import client
@@ -28,7 +28,7 @@ import fsspec
 class FluidFileSystem(fsspec.AbstractFileSystem):
     def __init__(self, dataset_name: str, workdir=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fluid_client = FluidClient()
+        self.fluid_client = FluidK8sClient()
 
         if workdir is None:
             workdir = "/"

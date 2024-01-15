@@ -2,7 +2,7 @@ import logging
 import sys
 
 from fluid import models
-from fluid import FluidClient
+from fluid import FluidK8sClient
 
 logger = logging.getLogger("fluidsdk")
 stream_handler = logging.StreamHandler(sys.stdout)
@@ -18,7 +18,7 @@ name = "demo"
 
 
 def main():
-    fluid_client = FluidClient()
+    fluid_client = FluidK8sClient()
     try:
         dataset = fluid_client.get_dataset(name, namespace)
     except Exception as e:

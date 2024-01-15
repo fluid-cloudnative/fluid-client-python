@@ -16,7 +16,7 @@ import sys
 
 from fluid import constants
 from fluid import models
-from fluid import FluidClient
+from fluid import FluidK8sClient
 
 logger = logging.getLogger("fluidsdk")
 stream_handler = logging.StreamHandler(sys.stdout)
@@ -71,7 +71,7 @@ def build_data_processor():
 
 def main():
     # Initialize Fluid client
-    fluid_client = FluidClient()
+    fluid_client = FluidK8sClient()
     # Get a bound dataset for later operations and dataflow
     dataset = fluid_client.get_dataset("demo-dataset")
 

@@ -27,7 +27,7 @@
 import os.path
 
 from fluid.io import FluidFileSystem
-from fluid import FluidClient
+from fluid import FluidK8sClient
 import fluid.models
 import fluid.constants
 from torch.utils import data
@@ -99,7 +99,7 @@ class FluidDatasetFolder(FluidMapDataset):
         samples = self.make_dataset(self.root, class_to_idx, extensions, is_valid_file)
 
         if need_warmup:
-            fluid_client = FluidClient()
+            fluid_client = FluidK8sClient()
             fluid_client.create_data_operation(fluid.models.DataLoad(
                 api_version=fluid.constants.API_VERSION,
                 kind=fluid.constants.DATA_LOAD_KIND,
