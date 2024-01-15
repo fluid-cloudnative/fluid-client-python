@@ -14,7 +14,7 @@
 import copy
 
 import s3fs
-from fluid.api.fluid_client import FluidK8sClient
+from fluid.api.fluid_k8s_client import FluidK8sClient
 from fluid.utils import utils as fluidutils
 from fluid import constants
 from kubernetes import client
