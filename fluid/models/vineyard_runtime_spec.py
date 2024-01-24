@@ -36,6 +36,7 @@ class VineyardRuntimeSpec(object):
         'disable_prometheus': 'bool',
         'fuse': 'VineyardSockSpec',
         'master': 'MasterSpec',
+        'replicas': 'int',
         'tieredstore': 'TieredStore',
         'volumes': 'list[V1Volume]',
         'worker': 'VineyardCompTemplateSpec'
@@ -45,12 +46,13 @@ class VineyardRuntimeSpec(object):
         'disable_prometheus': 'disablePrometheus',
         'fuse': 'fuse',
         'master': 'master',
+        'replicas': 'replicas',
         'tieredstore': 'tieredstore',
         'volumes': 'volumes',
         'worker': 'worker'
     }
 
-    def __init__(self, disable_prometheus=None, fuse=None, master=None, tieredstore=None, volumes=None, worker=None, local_vars_configuration=None):  # noqa: E501
+    def __init__(self, disable_prometheus=None, fuse=None, master=None, replicas=None, tieredstore=None, volumes=None, worker=None, local_vars_configuration=None):  # noqa: E501
         """VineyardRuntimeSpec - a model defined in OpenAPI"""  # noqa: E501
         if local_vars_configuration is None:
             local_vars_configuration = Configuration()
@@ -59,6 +61,7 @@ class VineyardRuntimeSpec(object):
         self._disable_prometheus = None
         self._fuse = None
         self._master = None
+        self._replicas = None
         self._tieredstore = None
         self._volumes = None
         self._worker = None
@@ -70,6 +73,8 @@ class VineyardRuntimeSpec(object):
             self.fuse = fuse
         if master is not None:
             self.master = master
+        if replicas is not None:
+            self.replicas = replicas
         if tieredstore is not None:
             self.tieredstore = tieredstore
         if volumes is not None:
@@ -141,6 +146,29 @@ class VineyardRuntimeSpec(object):
         """
 
         self._master = master
+
+    @property
+    def replicas(self):
+        """Gets the replicas of this VineyardRuntimeSpec.  # noqa: E501
+
+        The replicas of the worker, need to be specified If worker.replicas and the field are both specified, the field will be respected  # noqa: E501
+
+        :return: The replicas of this VineyardRuntimeSpec.  # noqa: E501
+        :rtype: int
+        """
+        return self._replicas
+
+    @replicas.setter
+    def replicas(self, replicas):
+        """Sets the replicas of this VineyardRuntimeSpec.
+
+        The replicas of the worker, need to be specified If worker.replicas and the field are both specified, the field will be respected  # noqa: E501
+
+        :param replicas: The replicas of this VineyardRuntimeSpec.  # noqa: E501
+        :type: int
+        """
+
+        self._replicas = replicas
 
     @property
     def tieredstore(self):
