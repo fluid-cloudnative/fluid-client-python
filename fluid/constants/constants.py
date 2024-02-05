@@ -40,6 +40,8 @@ THIN_RUNTIME_KIND = "ThinRuntime"
 THIN_RUNTIME_PLURAL = "thinruntimes"
 THIN_RUNTIME_PROFILE_KIND = "ThinRuntimeProfile"
 THIN_RUNTIME_PROFILE_PLURAL = "thinruntimeprofiles"
+VINEYARD_RUNTIME_KIND = "VineyardRuntime"
+VINEYARD_RUNTIME_PLURAL = "vineyardruntimes"
 
 RUNTIME_PARAMETERS = {
     ALLUXIO_RUNTIME_KIND: {
@@ -62,6 +64,10 @@ RUNTIME_PARAMETERS = {
         "plural": THIN_RUNTIME_PLURAL,
         "model": models.ThinRuntime
     },
+    VINEYARD_RUNTIME_KIND: {
+        "plural": VINEYARD_RUNTIME_PLURAL,
+        "model": models.VineyardRuntime
+    }
 }
 
 RUNTIME_MODELS = tuple(x["model"] for x in list(RUNTIME_PARAMETERS.values()))
@@ -70,7 +76,8 @@ RUNTIME_MODELS_TYPE = Union[
     models.JindoRuntime,
     models.JuiceFSRuntime,
     models.EFCRuntime,
-    models.ThinRuntime
+    models.ThinRuntime,
+    models.VineyardRuntime
 ]
 
 DATA_LOAD_KIND = "DataLoad"

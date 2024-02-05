@@ -134,6 +134,8 @@ class FluidDataset(object):
             runtime = self.__default_juicefs_runtime(replicas, cache_capacity_GiB, cache_medium, **kwargs)
         elif real_runtime_kind == constants.EFC_RUNTIME_KIND:
             runtime = self.__default_efc_runtime(replicas, cache_capacity_GiB, cache_medium, **kwargs)
+        elif real_runtime_kind == constants.VINEYARD_RUNTIME_KIND:
+            runtime = self.__default_vineyard_runtime(replicas, cache_capacity_GiB, cache_medium, **kwargs)
         else:
             raise ValueError(f"Unsupported runtime kind {real_runtime_kind}")
 
@@ -300,6 +302,30 @@ class FluidDataset(object):
                             path="/var/lib/fluid/cache",
                             quota=f"{cache_capacity_GiB}Gi",
                             volume_type="emptyDir"
+                        )
+                    ]
+                ),
+                **kwargs
+            )
+        )
+        return runtime
+
+    def __default_vineyard_runtime(self, replicas, cache_capacity_GiB, cache_medium, **kwargs):
+        runtime = models.VineyardRuntime(
+            api_version=constants.API_VERSION,
+            kind=constants.VINEYARD_RUNTIME_KIND,
+            metadata=client.V1ObjectMeta(
+                name=self.name,
+                namespace=self.namespace,
+            ),
+            spec=models.VineyardRuntimeSpec(
+                replicas=replicas,
+                tieredstore=models.TieredStore(
+                    levels=[
+                        models.Level(
+                            mediumtype=cache_medium,
+                            quota=f"{cache_capacity_GiB}Gi",
+                            volume_type="emptyDir",
                         )
                     ]
                 ),

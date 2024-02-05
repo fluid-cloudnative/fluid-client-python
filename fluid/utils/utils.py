@@ -92,6 +92,10 @@ def infer_runtime_kind(runtime_type: str) -> Optional[str]:
         "thin": constants.THIN_RUNTIME_KIND,
         "thinruntime": constants.THIN_RUNTIME_KIND,
         "thinruntimes": constants.THIN_RUNTIME_KIND,
+        # infer vineyard
+        "vineyard": constants.VINEYARD_RUNTIME_KIND,
+        "vineyardruntime": constants.VINEYARD_RUNTIME_KIND,
+        "vineyardruntimes": constants.VINEYARD_RUNTIME_KIND,
     }
 
     if runtime_type not in runtime_mapping:

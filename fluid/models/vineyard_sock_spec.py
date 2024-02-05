@@ -99,7 +99,7 @@ class VineyardSockSpec(object):
     def image(self):
         """Gets the image of this VineyardSockSpec.  # noqa: E501
 
-        Image for Vineyard Fuse Default is `vineyardcloudnative/vineyard-mount-socket`  # noqa: E501
+        Image for Vineyard Fuse Default is `vineyardcloudnative/vineyard-fluid-fuse`  # noqa: E501
 
         :return: The image of this VineyardSockSpec.  # noqa: E501
         :rtype: str
@@ -110,7 +110,7 @@ class VineyardSockSpec(object):
     def image(self, image):
         """Sets the image of this VineyardSockSpec.
 
-        Image for Vineyard Fuse Default is `vineyardcloudnative/vineyard-mount-socket`  # noqa: E501
+        Image for Vineyard Fuse Default is `vineyardcloudnative/vineyard-fluid-fuse`  # noqa: E501
 
         :param image: The image of this VineyardSockSpec.  # noqa: E501
         :type: str
