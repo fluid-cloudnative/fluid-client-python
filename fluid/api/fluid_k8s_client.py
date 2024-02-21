@@ -272,7 +272,7 @@ class FluidK8sClient(object):
         poll = 0
         while poll < poll_timeout:
             dataset = self.get_dataset(name, namespace)
-            if dataset.status.phase == "Bound":
+            if dataset.status is not None and dataset.status.phase == "Bound":
                 logger.debug(f"Dataset \"{namespace}/{name}\" bound successfully")
                 break
             poll += poll_interval
