@@ -1,0 +1,8 @@
+# Build the image which contains the Fluid Client Python SDK
+FROM python:3.8
+
+WORKDIR /fluid-client-python 
+
+COPY . .
+RUN pip install -r requirements.txt
+RUN python setup.py install
