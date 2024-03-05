@@ -52,7 +52,7 @@ class Mount(object):
         'shared': 'shared'
     }
 
-    def __init__(self, encrypt_options=None, mount_point=None, name=None, options=None, path=None, read_only=None, shared=None, local_vars_configuration=None):  # noqa: E501
+    def __init__(self, encrypt_options=None, mount_point='', name=None, options=None, path=None, read_only=None, shared=None, local_vars_configuration=None):  # noqa: E501
         """Mount - a model defined in OpenAPI"""  # noqa: E501
         if local_vars_configuration is None:
             local_vars_configuration = Configuration()
@@ -69,8 +69,7 @@ class Mount(object):
 
         if encrypt_options is not None:
             self.encrypt_options = encrypt_options
-        if mount_point is not None:
-            self.mount_point = mount_point
+        self.mount_point = mount_point
         if name is not None:
             self.name = name
         if options is not None:
@@ -125,6 +124,8 @@ class Mount(object):
         :param mount_point: The mount_point of this Mount.  # noqa: E501
         :type: str
         """
+        if self.local_vars_configuration.client_side_validation and mount_point is None:  # noqa: E501
+            raise ValueError("Invalid value for `mount_point`, must not be `None`")  # noqa: E501
 
         self._mount_point = mount_point
 

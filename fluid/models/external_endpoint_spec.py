@@ -89,7 +89,7 @@ class ExternalEndpointSpec(object):
     def options(self):
         """Gets the options of this ExternalEndpointSpec.  # noqa: E501
 
-        Configurable options for External Etcd cluster. Support the following options.    etcd.prefix: (String) the prefix of etcd key for vineyard objects  Default value is as follows.    etcd.prefix: \"/vineyard\"  # noqa: E501
+        Configurable options for External Etcd cluster.  # noqa: E501
 
         :return: The options of this ExternalEndpointSpec.  # noqa: E501
         :rtype: dict(str, str)
@@ -100,7 +100,7 @@ class ExternalEndpointSpec(object):
     def options(self, options):
         """Sets the options of this ExternalEndpointSpec.
 
-        Configurable options for External Etcd cluster. Support the following options.    etcd.prefix: (String) the prefix of etcd key for vineyard objects  Default value is as follows.    etcd.prefix: \"/vineyard\"  # noqa: E501
+        Configurable options for External Etcd cluster.  # noqa: E501
 
         :param options: The options of this ExternalEndpointSpec.  # noqa: E501
         :type: dict(str, str)

@@ -42,7 +42,7 @@ class EncryptOption(object):
         'value_from': 'valueFrom'
     }
 
-    def __init__(self, name=None, value_from=None, local_vars_configuration=None):  # noqa: E501
+    def __init__(self, name='', value_from=None, local_vars_configuration=None):  # noqa: E501
         """EncryptOption - a model defined in OpenAPI"""  # noqa: E501
         if local_vars_configuration is None:
             local_vars_configuration = Configuration()
@@ -52,8 +52,7 @@ class EncryptOption(object):
         self._value_from = None
         self.discriminator = None
 
-        if name is not None:
-            self.name = name
+        self.name = name
         if value_from is not None:
             self.value_from = value_from
 
@@ -77,6 +76,8 @@ class EncryptOption(object):
         :param name: The name of this EncryptOption.  # noqa: E501
         :type: str
         """
+        if self.local_vars_configuration.client_side_validation and name is None:  # noqa: E501
+            raise ValueError("Invalid value for `name`, must not be `None`")  # noqa: E501
 
         self._name = name
 

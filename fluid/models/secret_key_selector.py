@@ -42,7 +42,7 @@ class SecretKeySelector(object):
         'name': 'name'
     }
 
-    def __init__(self, key=None, name=None, local_vars_configuration=None):  # noqa: E501
+    def __init__(self, key=None, name='', local_vars_configuration=None):  # noqa: E501
         """SecretKeySelector - a model defined in OpenAPI"""  # noqa: E501
         if local_vars_configuration is None:
             local_vars_configuration = Configuration()
@@ -54,8 +54,7 @@ class SecretKeySelector(object):
 
         if key is not None:
             self.key = key
-        if name is not None:
-            self.name = name
+        self.name = name
 
     @property
     def key(self):
@@ -100,6 +99,8 @@ class SecretKeySelector(object):
         :param name: The name of this SecretKeySelector.  # noqa: E501
         :type: str
         """
+        if self.local_vars_configuration.client_side_validation and name is None:  # noqa: E501
+            raise ValueError("Invalid value for `name`, must not be `None`")  # noqa: E501
 
         self._name = name
 

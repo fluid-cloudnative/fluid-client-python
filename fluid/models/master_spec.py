@@ -242,7 +242,7 @@ class MasterSpec(object):
     def options(self):
         """Gets the options of this MasterSpec.  # noqa: E501
 
-        Configurable options for Vineyard component. For Master, there is no configurable options. For Worker, support the following options.    vineyardd.reserve.memory: (Bool) where to reserve memory for vineyardd                             If set to true, the memory quota will be counted to the vineyardd rather than the application.   etcd.prefix: (String) the prefix of etcd key for vineyard objects    Default value is as follows.      vineyardd.reserve.memory: \"true\"     etcd.prefix: \"/vineyard\"  # noqa: E501
+        Configurable options for Vineyard component. For Master, there is no configurable options. For Worker, support the following options.    vineyardd.reserve.memory: (Bool) where to reserve memory for vineyardd                             If set to true, the memory quota will be counted to the vineyardd rather than the application.   etcd.prefix: (String) the prefix of etcd key for vineyard objects   wait.etcd.timeout: (String) the timeout period before waiting the etcd to be ready, in seconds    Default value is as follows.      vineyardd.reserve.memory: \"true\"     etcd.prefix: \"/vineyard\"     wait.etcd.timeout: \"120\"  # noqa: E501
 
         :return: The options of this MasterSpec.  # noqa: E501
         :rtype: dict(str, str)
@@ -253,7 +253,7 @@ class MasterSpec(object):
     def options(self, options):
         """Sets the options of this MasterSpec.
 
-        Configurable options for Vineyard component. For Master, there is no configurable options. For Worker, support the following options.    vineyardd.reserve.memory: (Bool) where to reserve memory for vineyardd                             If set to true, the memory quota will be counted to the vineyardd rather than the application.   etcd.prefix: (String) the prefix of etcd key for vineyard objects    Default value is as follows.      vineyardd.reserve.memory: \"true\"     etcd.prefix: \"/vineyard\"  # noqa: E501
+        Configurable options for Vineyard component. For Master, there is no configurable options. For Worker, support the following options.    vineyardd.reserve.memory: (Bool) where to reserve memory for vineyardd                             If set to true, the memory quota will be counted to the vineyardd rather than the application.   etcd.prefix: (String) the prefix of etcd key for vineyard objects   wait.etcd.timeout: (String) the timeout period before waiting the etcd to be ready, in seconds    Default value is as follows.      vineyardd.reserve.memory: \"true\"     etcd.prefix: \"/vineyard\"     wait.etcd.timeout: \"120\"  # noqa: E501
 
         :param options: The options of this MasterSpec.  # noqa: E501
         :type: dict(str, str)
@@ -265,7 +265,7 @@ class MasterSpec(object):
     def ports(self):
         """Gets the ports of this MasterSpec.  # noqa: E501
 
-        Ports used by Vineyard component. For Master, the default client port is 2379 and peer port is 2380. For Worker, the default rpc port is 9600.  # noqa: E501
+        Ports used by Vineyard component. For Master, the default client port is 2379 and peer port is 2380. For Worker, the default rpc port is 9600 and the default exporter port is 9144.  # noqa: E501
 
         :return: The ports of this MasterSpec.  # noqa: E501
         :rtype: dict(str, int)
@@ -276,7 +276,7 @@ class MasterSpec(object):
     def ports(self, ports):
         """Sets the ports of this MasterSpec.
 
-        Ports used by Vineyard component. For Master, the default client port is 2379 and peer port is 2380. For Worker, the default rpc port is 9600.  # noqa: E501
+        Ports used by Vineyard component. For Master, the default client port is 2379 and peer port is 2380. For Worker, the default rpc port is 9600 and the default exporter port is 9144.  # noqa: E501
 
         :param ports: The ports of this MasterSpec.  # noqa: E501
         :type: dict(str, int)

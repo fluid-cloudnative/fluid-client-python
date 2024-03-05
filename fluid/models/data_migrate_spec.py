@@ -41,6 +41,8 @@ class DataMigrateSpec(object):
         'image_tag': 'str',
         'node_selector': 'dict(str, str)',
         'options': 'dict(str, str)',
+        'parallel_options': 'dict(str, str)',
+        'parallelism': 'int',
         'pod_metadata': 'PodMetadata',
         'policy': 'str',
         'resources': 'V1ResourceRequirements',
@@ -62,6 +64,8 @@ class DataMigrateSpec(object):
         'image_tag': 'imageTag',
         'node_selector': 'nodeSelector',
         'options': 'options',
+        'parallel_options': 'parallelOptions',
+        'parallelism': 'parallelism',
         'pod_metadata': 'podMetadata',
         'policy': 'policy',
         'resources': 'resources',
@@ -74,7 +78,7 @@ class DataMigrateSpec(object):
         'ttl_seconds_after_finished': 'ttlSecondsAfterFinished'
     }
 
-    def __init__(self, affinity=None, block=None, _from=None, image=None, image_pull_policy=None, image_tag=None, node_selector=None, options=None, pod_metadata=None, policy=None, resources=None, run_after=None, runtime_type=None, schedule=None, scheduler_name=None, to=None, tolerations=None, ttl_seconds_after_finished=None, local_vars_configuration=None):  # noqa: E501
+    def __init__(self, affinity=None, block=None, _from=None, image=None, image_pull_policy=None, image_tag=None, node_selector=None, options=None, parallel_options=None, parallelism=None, pod_metadata=None, policy=None, resources=None, run_after=None, runtime_type=None, schedule=None, scheduler_name=None, to=None, tolerations=None, ttl_seconds_after_finished=None, local_vars_configuration=None):  # noqa: E501
         """DataMigrateSpec - a model defined in OpenAPI"""  # noqa: E501
         if local_vars_configuration is None:
             local_vars_configuration = Configuration()
@@ -88,6 +92,8 @@ class DataMigrateSpec(object):
         self._image_tag = None
         self._node_selector = None
         self._options = None
+        self._parallel_options = None
+        self._parallelism = None
         self._pod_metadata = None
         self._policy = None
         self._resources = None
@@ -115,6 +121,10 @@ class DataMigrateSpec(object):
             self.node_selector = node_selector
         if options is not None:
             self.options = options
+        if parallel_options is not None:
+            self.parallel_options = parallel_options
+        if parallelism is not None:
+            self.parallelism = parallelism
         if pod_metadata is not None:
             self.pod_metadata = pod_metadata
         if policy is not None:
@@ -275,7 +285,7 @@ class DataMigrateSpec(object):
     def node_selector(self):
         """Gets the node_selector of this DataMigrateSpec.  # noqa: E501
 
-        NodeSelector defiens node selector for DataLoad pod  # noqa: E501
+        NodeSelector defiens node selector for DataMigrate pod  # noqa: E501
 
         :return: The node_selector of this DataMigrateSpec.  # noqa: E501
         :rtype: dict(str, str)
@@ -286,7 +296,7 @@ class DataMigrateSpec(object):
     def node_selector(self, node_selector):
         """Sets the node_selector of this DataMigrateSpec.
 
-        NodeSelector defiens node selector for DataLoad pod  # noqa: E501
+        NodeSelector defiens node selector for DataMigrate pod  # noqa: E501
 
         :param node_selector: The node_selector of this DataMigrateSpec.  # noqa: E501
         :type: dict(str, str)
@@ -316,6 +326,52 @@ class DataMigrateSpec(object):
         """
 
         self._options = options
+
+    @property
+    def parallel_options(self):
+        """Gets the parallel_options of this DataMigrateSpec.  # noqa: E501
+
+        ParallelOptions defines options like ssh port and ssh secret name when parallelism is greater than 1.  # noqa: E501
+
+        :return: The parallel_options of this DataMigrateSpec.  # noqa: E501
+        :rtype: dict(str, str)
+        """
+        return self._parallel_options
+
+    @parallel_options.setter
+    def parallel_options(self, parallel_options):
+        """Sets the parallel_options of this DataMigrateSpec.
+
+        ParallelOptions defines options like ssh port and ssh secret name when parallelism is greater than 1.  # noqa: E501
+
+        :param parallel_options: The parallel_options of this DataMigrateSpec.  # noqa: E501
+        :type: dict(str, str)
+        """
+
+        self._parallel_options = parallel_options
+
+    @property
+    def parallelism(self):
+        """Gets the parallelism of this DataMigrateSpec.  # noqa: E501
+
+        Parallelism defines the parallelism tasks numbers for DataMigrate. If the value is greater than 1, the job acts as a launcher, and users should define the WorkerSpec.  # noqa: E501
+
+        :return: The parallelism of this DataMigrateSpec.  # noqa: E501
+        :rtype: int
+        """
+        return self._parallelism
+
+    @parallelism.setter
+    def parallelism(self, parallelism):
+        """Sets the parallelism of this DataMigrateSpec.
+
+        Parallelism defines the parallelism tasks numbers for DataMigrate. If the value is greater than 1, the job acts as a launcher, and users should define the WorkerSpec.  # noqa: E501
+
+        :param parallelism: The parallelism of this DataMigrateSpec.  # noqa: E501
+        :type: int
+        """
+
+        self._parallelism = parallelism
 
     @property
     def pod_metadata(self):
@@ -453,7 +509,7 @@ class DataMigrateSpec(object):
     def scheduler_name(self):
         """Gets the scheduler_name of this DataMigrateSpec.  # noqa: E501
 
-        SchedulerName sets the scheduler to be used for DataLoad pod  # noqa: E501
+        SchedulerName sets the scheduler to be used for DataMigrate pod  # noqa: E501
 
         :return: The scheduler_name of this DataMigrateSpec.  # noqa: E501
         :rtype: str
@@ -464,7 +520,7 @@ class DataMigrateSpec(object):
     def scheduler_name(self, scheduler_name):
         """Sets the scheduler_name of this DataMigrateSpec.
 
-        SchedulerName sets the scheduler to be used for DataLoad pod  # noqa: E501
+        SchedulerName sets the scheduler to be used for DataMigrate pod  # noqa: E501
 
         :param scheduler_name: The scheduler_name of this DataMigrateSpec.  # noqa: E501
         :type: str
@@ -499,7 +555,7 @@ class DataMigrateSpec(object):
     def tolerations(self):
         """Gets the tolerations of this DataMigrateSpec.  # noqa: E501
 
-        Tolerations defines tolerations for DataLoad pod  # noqa: E501
+        Tolerations defines tolerations for DataMigrate pod  # noqa: E501
 
         :return: The tolerations of this DataMigrateSpec.  # noqa: E501
         :rtype: list[V1Toleration]
@@ -510,7 +566,7 @@ class DataMigrateSpec(object):
     def tolerations(self, tolerations):
         """Sets the tolerations of this DataMigrateSpec.
 
-        Tolerations defines tolerations for DataLoad pod  # noqa: E501
+        Tolerations defines tolerations for DataMigrate pod  # noqa: E501
 
         :param tolerations: The tolerations of this DataMigrateSpec.  # noqa: E501
         :type: list[V1Toleration]

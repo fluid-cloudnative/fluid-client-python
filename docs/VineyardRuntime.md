@@ -1,6 +1,6 @@
 # VineyardRuntime
 
-VineyardRuntime is the Schema for the vineyardruntimes API
+VineyardRuntime is the Schema for the VineyardRuntimes API
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------

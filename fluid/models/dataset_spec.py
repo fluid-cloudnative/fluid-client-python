@@ -80,7 +80,8 @@ class DatasetSpec(object):
             self.access_modes = access_modes
         if data_restore_location is not None:
             self.data_restore_location = data_restore_location
-        self.mounts = mounts
+        if mounts is not None:
+            self.mounts = mounts
         if node_affinity is not None:
             self.node_affinity = node_affinity
         if owner is not None:
@@ -144,7 +145,7 @@ class DatasetSpec(object):
     def mounts(self):
         """Gets the mounts of this DatasetSpec.  # noqa: E501
 
-        Mount Points to be mounted on Alluxio.  # noqa: E501
+        Mount Points to be mounted on cache runtime. <br> This field can be empty because some runtimes don't need to mount external storage (e.g. <a href=\"https://v6d.io/\">Vineyard</a>).  # noqa: E501
 
         :return: The mounts of this DatasetSpec.  # noqa: E501
         :rtype: list[Mount]
@@ -155,13 +156,11 @@ class DatasetSpec(object):
     def mounts(self, mounts):
         """Sets the mounts of this DatasetSpec.
 
-        Mount Points to be mounted on Alluxio.  # noqa: E501
+        Mount Points to be mounted on cache runtime. <br> This field can be empty because some runtimes don't need to mount external storage (e.g. <a href=\"https://v6d.io/\">Vineyard</a>).  # noqa: E501
 
         :param mounts: The mounts of this DatasetSpec.  # noqa: E501
         :type: list[Mount]
         """
-        if self.local_vars_configuration.client_side_validation and mounts is None:  # noqa: E501
-            raise ValueError("Invalid value for `mounts`, must not be `None`")  # noqa: E501
 
         self._mounts = mounts
 

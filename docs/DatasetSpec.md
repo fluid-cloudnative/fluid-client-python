@@ -6,7 +6,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **access_modes** | **list[str]** | AccessModes contains all ways the volume backing the PVC can be mounted | [optional] 
 **data_restore_location** | [**DataRestoreLocation**](DataRestoreLocation.md) |  | [optional] 
-**mounts** | [**list[Mount]**](Mount.md) | Mount Points to be mounted on Alluxio. | 
+**mounts** | [**list[Mount]**](Mount.md) | Mount Points to be mounted on cache runtime. &lt;br&gt; This field can be empty because some runtimes don&#39;t need to mount external storage (e.g. &lt;a href&#x3D;\&quot;https://v6d.io/\&quot;&gt;Vineyard&lt;/a&gt;). | [optional] 
 **node_affinity** | [**CacheableNodeAffinity**](CacheableNodeAffinity.md) |  | [optional] 
 **owner** | [**User**](User.md) |  | [optional] 
 **placement** | **str** | Manage switch for opening Multiple datasets single node deployment or not | [optional] 
