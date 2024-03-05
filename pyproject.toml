@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fluid-pysdk"
+authors = [
+    { name = "Fluid Authors", email = "fluid.opensource.project@gmail.com" },
+]
+description = "Python SDK for fluid-cloudnative fluid to manage datasets"
+license = { file = "LICENSE" }
+requires-python = ">=3.7"
+classifiers = [
+    'Development Status :: 3 - Alpha',
+    'Intended Audience :: Developers',
+    'License :: OSI Approved :: Apache Software License',
+    'Operating System :: OS Independent',
+    'Programming Language :: Python',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3 :: Only',
+    'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Topic :: Scientific/Engineering',
+    'Topic :: Scientific/Engineering :: Artificial Intelligence',
+    'Topic :: Software Development',
+    'Topic :: Software Development :: Libraries',
+    'Topic :: Software Development :: Libraries :: Python Modules',
+]
+keywords = ["fluid", "kubernetes", "data-abstraction", "data-pipeline", "distributed-cache"]
+dynamic = ["version", "dependencies"]
+
+[project.urls]
+Homepage = "https://github.com/fluid-cloudnative/fluid-client-python"
+Issues = "https://github.com/fluid-cloudnative/fluid-client-python/issues"
+
+[tool.setuptools.dynamic]
+version = { attr = "fluid.__version__" }
+dependencies = { file = "requirements.txt" }
+
+
