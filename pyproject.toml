@@ -35,6 +35,9 @@ dynamic = ["version", "dependencies"]
 Homepage = "https://github.com/fluid-cloudnative/fluid-client-python"
 Issues = "https://github.com/fluid-cloudnative/fluid-client-python/issues"
 
+[tool.setuptools]
+packages = ["fluid"]
+
 [tool.setuptools.dynamic]
 #version = { attr = "fluid.__version__" }
 dependencies = { file = "requirements.txt" }
