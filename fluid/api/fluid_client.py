@@ -50,7 +50,8 @@ class FluidClient(object):
         self.k8s_client = FluidK8sClient(config.namespace, config.runtime_kind, config.kube_config_file,
                                          config.kube_context, config.kube_client_configuration)
 
-    def create_dataset(self, dataset_name: str, mount_name: str, mount_point: str, mount_path="", mode="ReadOnly",
+    def create_dataset(self, dataset_name: str, mount_name: str = None, mount_point: str = None, mount_path="",
+                       mode="ReadOnly",
                        options=None,
                        cred_secret_name=None,
                        cred_secret_options=None, namespace=None,
@@ -71,7 +72,22 @@ class FluidClient(object):
                 models.EncryptOption(opt_key, models.EncryptOptionSource(
                     models.SecretKeySelector(secret_key, cred_secret_name))))
 
+        if (mount_name is None) != (mount_point is None):
+            raise ValueError("mount_name and mount_point must be set together")
+
+        if mount_name is None:
+            mount_items = None
+        else:
+            mount_items = [models.Mount(
+                mount_point=mount_point,
+                path=mount_path,
+                name=mount_name,
+                options=options,
+                encrypt_options=encrypt_options
+            )]
+
         access_mode = "ReadOnlyMany" if mode == "ReadOnly" else "ReadWriteMany"
+
         ds = models.Dataset(
             api_version=constants.API_VERSION,
             kind=constants.DATASET_KIND,
@@ -80,13 +96,7 @@ class FluidClient(object):
                 namespace=namespace or self.config.namespace,
             ),
             spec=models.DatasetSpec(
-                mounts=[models.Mount(
-                    mount_point=mount_point,
-                    path=mount_path,
-                    name=mount_name,
-                    options=options,
-                    encrypt_options=encrypt_options
-                )],
+                mounts=mount_items,
                 access_modes=[access_mode],
                 **kwargs
             )
