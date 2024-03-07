@@ -208,7 +208,7 @@ class FluidDataFlow(object):
         self.flow_ops.append(op)
         return self
 
-    def run(self, run_id):
+    def run(self, run_id, ttl_seconds_after_finished=constants.DEFAULT_DATAFLOW_TIME_TO_LIVE):
         """
         Execute the dataflow by submitting all the defined operations to the cluster.
 
@@ -216,6 +216,8 @@ class FluidDataFlow(object):
         ----------
         run_id: str
             The run id of the dataflow.
+        ttl_seconds_after_finished: int
+            Seconds to live after finished for each operation in the dataflow.
 
         Returns
         -------
@@ -246,6 +248,7 @@ class FluidDataFlow(object):
                     namespace=last_step.metadata.namespace,
                     kind=last_step.kind
                 )
+            op.spec.ttl_seconds_after_finished = ttl_seconds_after_finished
             self.fluid_client.create_data_operation(op)
             last_step = op
         return FlowHandle(run_id, steps_to_execute)

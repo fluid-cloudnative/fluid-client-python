@@ -140,7 +140,7 @@ class FluidK8sClient(object):
         if wait:
             self.wait_data_operation_completed(data_op.metadata.name, data_op.kind, namespace)
 
-    def get_dataset(self, name, namespace=None, timeout=constants.DEFAULT_TIMEOUT) -> models.Dataset:
+    def get_dataset(self, name, namespace=None, timeout=constants.DEFAULT_API_REQUEST_TIMEOUT) -> models.Dataset:
         namespace = namespace or self.namespace
 
         try:
@@ -168,7 +168,7 @@ class FluidK8sClient(object):
         return dataset
 
     def get_runtime(self, name, runtime_type=None, namespace=None,
-                    timeout=constants.DEFAULT_TIMEOUT) -> constants.RUNTIME_MODELS_TYPE:
+                    timeout=constants.DEFAULT_API_REQUEST_TIMEOUT) -> constants.RUNTIME_MODELS_TYPE:
         namespace = namespace or self.namespace
         runtime_kind = utils.infer_runtime_kind(runtime_type) or self.default_runtime_kind
         if runtime_kind is None:
@@ -199,7 +199,7 @@ class FluidK8sClient(object):
 
         return runtime
 
-    def get_data_operation(self, name, data_op_type, namespace=None, timeout=constants.DEFAULT_TIMEOUT):
+    def get_data_operation(self, name, data_op_type, namespace=None, timeout=constants.DEFAULT_API_REQUEST_TIMEOUT):
         namespace = namespace or self.namespace
         data_op_kind = utils.infer_data_operation_kind(data_op_type)
         if data_op_kind is None:
@@ -280,7 +280,8 @@ class FluidK8sClient(object):
         if poll >= poll_timeout:
             raise TimeoutError(f"TimeoutError: Timed out when waiting dataset \"{namespace}/{name}\" bound")
 
-    def delete_dataset(self, name, namespace=None, wait_until_cleaned_up=False, timeout=constants.DEFAULT_TIMEOUT,
+    def delete_dataset(self, name, namespace=None, wait_until_cleaned_up=False,
+                       timeout=constants.DEFAULT_API_REQUEST_TIMEOUT,
                        **kwargs):
         namespace = namespace or self.namespace
 
@@ -330,7 +331,7 @@ class FluidK8sClient(object):
                                 wait_until_cleaned_up=wait_until_cleaned_up, timeout=timeout, **kwargs)
 
     def delete_runtime(self, name, runtime_type=None, namespace=None, wait_until_cleaned_up=False,
-                       timeout=constants.DEFAULT_TIMEOUT, **kwargs):
+                       timeout=constants.DEFAULT_API_REQUEST_TIMEOUT, **kwargs):
         namespace = namespace or self.namespace
         runtime_kind = utils.infer_runtime_kind(runtime_type) or self.default_runtime_kind
         if runtime_kind is None:

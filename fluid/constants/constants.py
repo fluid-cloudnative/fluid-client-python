@@ -16,11 +16,13 @@ from typing import Union
 
 from fluid import models
 
-DEFAULT_TIMEOUT = 300
-
+# ------ Common Contants -------
+DEFAULT_API_REQUEST_TIMEOUT = 300
 DEFAULT_POLL_TIMEOUT = 600
 DEFAULT_POLL_INTERVAL = 3
+DEFAULT_DATAFLOW_TIME_TO_LIVE = 86400 * 3  # 3 days
 
+# ------ Fluid Types -------
 GROUP = "data.fluid.io"
 VERSION = "v1alpha1"
 API_VERSION = f"{GROUP}/{VERSION}"
@@ -125,5 +127,6 @@ for kind, params in RUNTIME_PARAMETERS.items():
 for kind, params in DATA_OPERATION_PARAMETERS.items():
     FLUID_CRD_PARAMETERS[kind] = params
 
+# ------ DataMigrate Constants ------
 DATA_MIGRATE_DIRECTION_FROM = "from"
 DATA_MIGRATE_DIRECTION_TO = "to"

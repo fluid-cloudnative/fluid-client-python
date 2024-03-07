@@ -16,7 +16,7 @@ import sys
 
 from fluid import constants
 from fluid import models
-from fluid import FluidK8sClient
+from fluid import FluidClient, ClientConfig
 
 logger = logging.getLogger("fluidsdk")
 stream_handler = logging.StreamHandler(sys.stdout)
@@ -71,7 +71,7 @@ def build_data_processor():
 
 def main():
     # Initialize Fluid client
-    fluid_client = FluidK8sClient()
+    fluid_client = FluidClient(ClientConfig())
     # Get a bound dataset for later operations and dataflow
     dataset = fluid_client.get_dataset("demo-dataset")
 
@@ -85,12 +85,14 @@ def main():
         print(op_status)
 
     # Flow example 3: migrate some data to the dataset, preload it and finally process it.
-    # Then wait until the flow is completed
-    flow3 = dataset.migrate("/ossdata", constants.DATA_MIGRATE_DIRECTION_FROM,
-                            models.ExternalStorage(uri="oss://my-bucket/my-data",
-                                                   encrypt_options=get_encrypt_options())) \
-        .preload("/ossdata").process(dataset_mountpath="/data", processor=build_data_processor()).run(
-        run_id="testflow3")
+    # The following code waits until the flow is completed.
+    # After 24 hours, all the operations in the flow will be automatically garbage collected.
+    flow3 = dataset \
+        .migrate("/ossdata", constants.DATA_MIGRATE_DIRECTION_FROM,
+                 models.ExternalStorage(uri="oss://my-bucket/my-data", encrypt_options=get_encrypt_options())) \
+        .preload("/ossdata") \
+        .process(dataset_mountpath="/data", processor=build_data_processor()) \
+        .run(run_id="testflow3", ttl_seconds_after_finished=86400)
     flow3.wait()
 
 
