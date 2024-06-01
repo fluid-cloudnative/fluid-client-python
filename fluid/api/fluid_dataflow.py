@@ -224,7 +224,7 @@ class FluidDataFlow(object):
         The FlowHandle object which may track the flow's status.
         """
         try:
-            dataset = self.fluid_client.get_dataset(self.dataset_name)
+            dataset = self.fluid_client.get_dataset(self.dataset_name, self.dataset_namespace)
         except Exception as e:
             raise RuntimeError(f"failed to get dataset {self.dataset_name}: {e}")
 
