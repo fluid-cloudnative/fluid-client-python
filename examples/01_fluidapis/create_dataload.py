@@ -79,5 +79,5 @@ def create_dataload_and_wait_for_completion():
 
 
 if __name__ == '__main__':
-    create_dataload()
-    # create_dataload_and_wait_for_completion()
+    # create_dataload()
+    create_dataload_and_wait_for_completion()

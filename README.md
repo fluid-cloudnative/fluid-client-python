@@ -14,11 +14,6 @@ pip install git+https://github.com/fluid-cloudnative/fluid-client-python.git
 ```
 (you may need to run `pip` with root permission: `sudo pip install git+https://github.com/fluid-cloudnative/fluid-client-python.git`)
 
-Then import the package:
-```python
-import fluid
-```
-
 ### Setuptools
 
 Install via [Setuptools](http://pypi.python.org/pypi/setuptools).
@@ -28,16 +23,55 @@ python setup.py install --user
 ```
 (or `sudo python setup.py install` to install the package for all users)
 
-Then import the package:
-```python
-import fluid
-```
-
 ## Getting Started
 
-Please follow the [installation procedure](#installation--usage) and then run the following:
+Fluid Python SDK provides two types of "client SDK" for users with different expertises and preference.
+- `fluid.FluidClient` (the recommended one) provides a more Pythonic interface with polished user experience.
+- `fluid.FluidK8sClient` provides a low-level YAML-style interface for those who have rich experience in Kubernetes.
 
-The following is a code sample which creates a dataset and get its status.
+The following shows the same code example using two types of client SDK. The example simply creates a dataset and get its status.
+
+### with `fluid.FluidClient`
+
+```python
+import logging
+import sys
+
+from fluid import FluidClient, ClientConfig
+
+logger = logging.getLogger("fluidsdk")
+stream_handler = logging.StreamHandler(sys.stdout)
+stream_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+logger.addHandler(stream_handler)
+logger.setLevel(logging.INFO)
+
+def main():
+    name = "demo"
+    namespace = "default"
+    
+    client_config = ClientConfig(namespace=namespace)
+    fluid_client = FluidClient(client_config)
+    
+    
+    try:
+        fluid_client.create_dataset(name, "hbase", "https://mirrors.tuna.tsinghua.edu.cn/apache/hbase/stable/", "/")
+    except Exception as e:
+       raise RuntimeError(f"Failed to create dataset: {e}") 
+    
+    logger.info(f"Dataset \"{namespace}/{name}\" created successfully")
+    
+    try:
+        dataset = fluid_client.get_dataset(name, namespace)
+    except Exception as e:
+        raise RuntimeError(f"Error when getting dataset \"{namespace}/{name}\": {e}")
+    else:
+        logger.info(f"Dataset \"{namespace}/{name}\"'s phase is: {dataset.report_status(status_type='binding_status')['phase']}")
+
+if __name__ == '__main__':
+    main()
+```
+
+### with `fluid.FluidK8sClient`
 
 ```python
 import logging
@@ -75,7 +109,7 @@ def main():
         spec=models.DatasetSpec(
             mounts=[
                 models.Mount(
-                    mount_point="https://mirrors.bit.edu.cn/apache/hbase/stable/",
+                    mount_point="https://mirrors.tuna.tsinghua.edu.cn/apache/hbase/stable/",
                     name="hbase",
                     path="/",
                 )

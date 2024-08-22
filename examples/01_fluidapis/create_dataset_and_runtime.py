@@ -23,7 +23,7 @@ def create_dataset_with_alluxio(fluid_client: FluidClient):
     dataset_name = "demo"
     try:
         # Mounting WebUFS to Alluxio
-        fluid_client.create_dataset(dataset_name, "hbase", "https://mirrors.bit.edu.cn/apache/hbase/stable/", "/hbase")
+        fluid_client.create_dataset(dataset_name, "hbase", "https://mirrors.tuna.tsinghua.edu.cn/apache/hbase/stable/", "/")
     except Exception as e:
         raise RuntimeError(f"Failed to create dataset: {e}")
 
@@ -150,7 +150,7 @@ def main_k8s_client():
         spec=models.DatasetSpec(
             mounts=[
                 models.Mount(
-                    mount_point="https://mirrors.bit.edu.cn/apache/hbase/stable/",
+                    mount_point="https://mirrors.tuna.tsinghua.edu.cn/apache/hbase/stable/",
                     name="hbase",
                     path="/",
                 )
