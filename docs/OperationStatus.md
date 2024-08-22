@@ -9,6 +9,7 @@ Name | Type | Description | Notes
 **infos** | **dict(str, str)** | Infos operation customized name-value | [optional] 
 **last_schedule_time** | [**datetime**](V1Time.md) |  | [optional] 
 **last_successful_time** | [**datetime**](V1Time.md) |  | [optional] 
+**node_affinity** | [**V1NodeAffinity**](V1NodeAffinity.md) |  | [optional] 
 **phase** | **str** | Phase describes current phase of operation | [default to '']
 **waiting_for** | [**WaitingStatus**](WaitingStatus.md) |  | [optional] 
 

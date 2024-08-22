@@ -6,6 +6,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **enabled** | **bool** | Enabled or Disabled for the components. For now, only  API Gateway is enabled or disabled. | [optional] 
 **env** | **dict(str, str)** | Environment variables that will be used by Alluxio component. &lt;br&gt; | [optional] 
+**image_pull_secrets** | [**list[V1LocalObjectReference]**](V1LocalObjectReference.md) | ImagePullSecrets that will be used to pull images | [optional] 
 **jvm_options** | **list[str]** | Options for JVM | [optional] 
 **network_mode** | **str** | Whether to use hostnetwork or not | [optional] 
 **node_selector** | **dict(str, str)** | NodeSelector is a selector which must be true for the master to fit on a node | [optional] 

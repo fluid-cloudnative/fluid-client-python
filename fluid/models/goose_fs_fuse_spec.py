@@ -37,7 +37,6 @@ class GooseFSFuseSpec(object):
         'args': 'list[str]',
         'clean_policy': 'str',
         'env': 'dict(str, str)',
-        '_global': 'bool',
         'image': 'str',
         'image_pull_policy': 'str',
         'image_tag': 'str',
@@ -52,7 +51,6 @@ class GooseFSFuseSpec(object):
         'args': 'args',
         'clean_policy': 'cleanPolicy',
         'env': 'env',
-        '_global': 'global',
         'image': 'image',
         'image_pull_policy': 'imagePullPolicy',
         'image_tag': 'imageTag',
@@ -62,7 +60,7 @@ class GooseFSFuseSpec(object):
         'resources': 'resources'
     }
 
-    def __init__(self, annotations=None, args=None, clean_policy=None, env=None, _global=None, image=None, image_pull_policy=None, image_tag=None, jvm_options=None, node_selector=None, properties=None, resources=None, local_vars_configuration=None):  # noqa: E501
+    def __init__(self, annotations=None, args=None, clean_policy=None, env=None, image=None, image_pull_policy=None, image_tag=None, jvm_options=None, node_selector=None, properties=None, resources=None, local_vars_configuration=None):  # noqa: E501
         """GooseFSFuseSpec - a model defined in OpenAPI"""  # noqa: E501
         if local_vars_configuration is None:
             local_vars_configuration = Configuration()
@@ -72,7 +70,6 @@ class GooseFSFuseSpec(object):
         self._args = None
         self._clean_policy = None
         self._env = None
-        self.__global = None
         self._image = None
         self._image_pull_policy = None
         self._image_tag = None
@@ -90,8 +87,6 @@ class GooseFSFuseSpec(object):
             self.clean_policy = clean_policy
         if env is not None:
             self.env = env
-        if _global is not None:
-            self._global = _global
         if image is not None:
             self.image = image
         if image_pull_policy is not None:
@@ -198,29 +193,6 @@ class GooseFSFuseSpec(object):
         """
 
         self._env = env
-
-    @property
-    def _global(self):
-        """Gets the _global of this GooseFSFuseSpec.  # noqa: E501
-
-        If the fuse client should be deployed in global mode, otherwise the affinity should be considered  # noqa: E501
-
-        :return: The _global of this GooseFSFuseSpec.  # noqa: E501
-        :rtype: bool
-        """
-        return self.__global
-
-    @_global.setter
-    def _global(self, _global):
-        """Sets the _global of this GooseFSFuseSpec.
-
-        If the fuse client should be deployed in global mode, otherwise the affinity should be considered  # noqa: E501
-
-        :param _global: The _global of this GooseFSFuseSpec.  # noqa: E501
-        :type: bool
-        """
-
-        self.__global = _global
 
     @property
     def image(self):

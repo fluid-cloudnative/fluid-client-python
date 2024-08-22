@@ -35,6 +35,7 @@ class AlluxioCompTemplateSpec(object):
     openapi_types = {
         'enabled': 'bool',
         'env': 'dict(str, str)',
+        'image_pull_secrets': 'list[V1LocalObjectReference]',
         'jvm_options': 'list[str]',
         'network_mode': 'str',
         'node_selector': 'dict(str, str)',
@@ -49,6 +50,7 @@ class AlluxioCompTemplateSpec(object):
     attribute_map = {
         'enabled': 'enabled',
         'env': 'env',
+        'image_pull_secrets': 'imagePullSecrets',
         'jvm_options': 'jvmOptions',
         'network_mode': 'networkMode',
         'node_selector': 'nodeSelector',
@@ -60,7 +62,7 @@ class AlluxioCompTemplateSpec(object):
         'volume_mounts': 'volumeMounts'
     }
 
-    def __init__(self, enabled=None, env=None, jvm_options=None, network_mode=None, node_selector=None, pod_metadata=None, ports=None, properties=None, replicas=None, resources=None, volume_mounts=None, local_vars_configuration=None):  # noqa: E501
+    def __init__(self, enabled=None, env=None, image_pull_secrets=None, jvm_options=None, network_mode=None, node_selector=None, pod_metadata=None, ports=None, properties=None, replicas=None, resources=None, volume_mounts=None, local_vars_configuration=None):  # noqa: E501
         """AlluxioCompTemplateSpec - a model defined in OpenAPI"""  # noqa: E501
         if local_vars_configuration is None:
             local_vars_configuration = Configuration()
@@ -68,6 +70,7 @@ class AlluxioCompTemplateSpec(object):
 
         self._enabled = None
         self._env = None
+        self._image_pull_secrets = None
         self._jvm_options = None
         self._network_mode = None
         self._node_selector = None
@@ -83,6 +86,8 @@ class AlluxioCompTemplateSpec(object):
             self.enabled = enabled
         if env is not None:
             self.env = env
+        if image_pull_secrets is not None:
+            self.image_pull_secrets = image_pull_secrets
         if jvm_options is not None:
             self.jvm_options = jvm_options
         if network_mode is not None:
@@ -147,6 +152,29 @@ class AlluxioCompTemplateSpec(object):
         """
 
         self._env = env
+
+    @property
+    def image_pull_secrets(self):
+        """Gets the image_pull_secrets of this AlluxioCompTemplateSpec.  # noqa: E501
+
+        ImagePullSecrets that will be used to pull images  # noqa: E501
+
+        :return: The image_pull_secrets of this AlluxioCompTemplateSpec.  # noqa: E501
+        :rtype: list[V1LocalObjectReference]
+        """
+        return self._image_pull_secrets
+
+    @image_pull_secrets.setter
+    def image_pull_secrets(self, image_pull_secrets):
+        """Sets the image_pull_secrets of this AlluxioCompTemplateSpec.
+
+        ImagePullSecrets that will be used to pull images  # noqa: E501
+
+        :param image_pull_secrets: The image_pull_secrets of this AlluxioCompTemplateSpec.  # noqa: E501
+        :type: list[V1LocalObjectReference]
+        """
+
+        self._image_pull_secrets = image_pull_secrets
 
     @property
     def jvm_options(self):

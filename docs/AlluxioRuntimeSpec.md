@@ -10,6 +10,7 @@ Name | Type | Description | Notes
 **disable_prometheus** | **bool** | Disable monitoring for Alluxio Runtime Prometheus is enabled by default | [optional] 
 **fuse** | [**AlluxioFuseSpec**](AlluxioFuseSpec.md) |  | [optional] 
 **hadoop_config** | **str** | Name of the configMap used to support HDFS configurations when using HDFS as Alluxio&#39;s UFS. The configMap must be in the same namespace with the AlluxioRuntime. The configMap should contain user-specific HDFS conf files in it. For now, only \&quot;hdfs-site.xml\&quot; and \&quot;core-site.xml\&quot; are supported. It must take the filename of the conf file as the key and content of the file as the value. | [optional] 
+**image_pull_secrets** | [**list[V1LocalObjectReference]**](V1LocalObjectReference.md) | ImagePullSecrets that will be used to pull images | [optional] 
 **init_users** | [**InitUsersSpec**](InitUsersSpec.md) |  | [optional] 
 **job_master** | [**AlluxioCompTemplateSpec**](AlluxioCompTemplateSpec.md) |  | [optional] 
 **job_worker** | [**AlluxioCompTemplateSpec**](AlluxioCompTemplateSpec.md) |  | [optional] 

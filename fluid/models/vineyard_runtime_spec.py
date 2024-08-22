@@ -34,8 +34,9 @@ class VineyardRuntimeSpec(object):
     """
     openapi_types = {
         'disable_prometheus': 'bool',
-        'fuse': 'VineyardSockSpec',
+        'fuse': 'VineyardClientSocketSpec',
         'master': 'MasterSpec',
+        'pod_metadata': 'PodMetadata',
         'replicas': 'int',
         'tieredstore': 'TieredStore',
         'volumes': 'list[V1Volume]',
@@ -46,13 +47,14 @@ class VineyardRuntimeSpec(object):
         'disable_prometheus': 'disablePrometheus',
         'fuse': 'fuse',
         'master': 'master',
+        'pod_metadata': 'podMetadata',
         'replicas': 'replicas',
         'tieredstore': 'tieredstore',
         'volumes': 'volumes',
         'worker': 'worker'
     }
 
-    def __init__(self, disable_prometheus=None, fuse=None, master=None, replicas=None, tieredstore=None, volumes=None, worker=None, local_vars_configuration=None):  # noqa: E501
+    def __init__(self, disable_prometheus=None, fuse=None, master=None, pod_metadata=None, replicas=None, tieredstore=None, volumes=None, worker=None, local_vars_configuration=None):  # noqa: E501
         """VineyardRuntimeSpec - a model defined in OpenAPI"""  # noqa: E501
         if local_vars_configuration is None:
             local_vars_configuration = Configuration()
@@ -61,6 +63,7 @@ class VineyardRuntimeSpec(object):
         self._disable_prometheus = None
         self._fuse = None
         self._master = None
+        self._pod_metadata = None
         self._replicas = None
         self._tieredstore = None
         self._volumes = None
@@ -73,6 +76,8 @@ class VineyardRuntimeSpec(object):
             self.fuse = fuse
         if master is not None:
             self.master = master
+        if pod_metadata is not None:
+            self.pod_metadata = pod_metadata
         if replicas is not None:
             self.replicas = replicas
         if tieredstore is not None:
@@ -111,7 +116,7 @@ class VineyardRuntimeSpec(object):
 
 
         :return: The fuse of this VineyardRuntimeSpec.  # noqa: E501
-        :rtype: VineyardSockSpec
+        :rtype: VineyardClientSocketSpec
         """
         return self._fuse
 
@@ -121,7 +126,7 @@ class VineyardRuntimeSpec(object):
 
 
         :param fuse: The fuse of this VineyardRuntimeSpec.  # noqa: E501
-        :type: VineyardSockSpec
+        :type: VineyardClientSocketSpec
         """
 
         self._fuse = fuse
@@ -146,6 +151,27 @@ class VineyardRuntimeSpec(object):
         """
 
         self._master = master
+
+    @property
+    def pod_metadata(self):
+        """Gets the pod_metadata of this VineyardRuntimeSpec.  # noqa: E501
+
+
+        :return: The pod_metadata of this VineyardRuntimeSpec.  # noqa: E501
+        :rtype: PodMetadata
+        """
+        return self._pod_metadata
+
+    @pod_metadata.setter
+    def pod_metadata(self, pod_metadata):
+        """Sets the pod_metadata of this VineyardRuntimeSpec.
+
+
+        :param pod_metadata: The pod_metadata of this VineyardRuntimeSpec.  # noqa: E501
+        :type: PodMetadata
+        """
+
+        self._pod_metadata = pod_metadata
 
     @property
     def replicas(self):

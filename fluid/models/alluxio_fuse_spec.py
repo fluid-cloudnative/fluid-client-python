@@ -36,9 +36,9 @@ class AlluxioFuseSpec(object):
         'args': 'list[str]',
         'clean_policy': 'str',
         'env': 'dict(str, str)',
-        '_global': 'bool',
         'image': 'str',
         'image_pull_policy': 'str',
+        'image_pull_secrets': 'list[V1LocalObjectReference]',
         'image_tag': 'str',
         'jvm_options': 'list[str]',
         'network_mode': 'str',
@@ -53,9 +53,9 @@ class AlluxioFuseSpec(object):
         'args': 'args',
         'clean_policy': 'cleanPolicy',
         'env': 'env',
-        '_global': 'global',
         'image': 'image',
         'image_pull_policy': 'imagePullPolicy',
+        'image_pull_secrets': 'imagePullSecrets',
         'image_tag': 'imageTag',
         'jvm_options': 'jvmOptions',
         'network_mode': 'networkMode',
@@ -66,7 +66,7 @@ class AlluxioFuseSpec(object):
         'volume_mounts': 'volumeMounts'
     }
 
-    def __init__(self, args=None, clean_policy=None, env=None, _global=None, image=None, image_pull_policy=None, image_tag=None, jvm_options=None, network_mode=None, node_selector=None, pod_metadata=None, properties=None, resources=None, volume_mounts=None, local_vars_configuration=None):  # noqa: E501
+    def __init__(self, args=None, clean_policy=None, env=None, image=None, image_pull_policy=None, image_pull_secrets=None, image_tag=None, jvm_options=None, network_mode=None, node_selector=None, pod_metadata=None, properties=None, resources=None, volume_mounts=None, local_vars_configuration=None):  # noqa: E501
         """AlluxioFuseSpec - a model defined in OpenAPI"""  # noqa: E501
         if local_vars_configuration is None:
             local_vars_configuration = Configuration()
@@ -75,9 +75,9 @@ class AlluxioFuseSpec(object):
         self._args = None
         self._clean_policy = None
         self._env = None
-        self.__global = None
         self._image = None
         self._image_pull_policy = None
+        self._image_pull_secrets = None
         self._image_tag = None
         self._jvm_options = None
         self._network_mode = None
@@ -94,12 +94,12 @@ class AlluxioFuseSpec(object):
             self.clean_policy = clean_policy
         if env is not None:
             self.env = env
-        if _global is not None:
-            self._global = _global
         if image is not None:
             self.image = image
         if image_pull_policy is not None:
             self.image_pull_policy = image_pull_policy
+        if image_pull_secrets is not None:
+            self.image_pull_secrets = image_pull_secrets
         if image_tag is not None:
             self.image_tag = image_tag
         if jvm_options is not None:
@@ -187,29 +187,6 @@ class AlluxioFuseSpec(object):
         self._env = env
 
     @property
-    def _global(self):
-        """Gets the _global of this AlluxioFuseSpec.  # noqa: E501
-
-        If the fuse client should be deployed in global mode, otherwise the affinity should be considered  # noqa: E501
-
-        :return: The _global of this AlluxioFuseSpec.  # noqa: E501
-        :rtype: bool
-        """
-        return self.__global
-
-    @_global.setter
-    def _global(self, _global):
-        """Sets the _global of this AlluxioFuseSpec.
-
-        If the fuse client should be deployed in global mode, otherwise the affinity should be considered  # noqa: E501
-
-        :param _global: The _global of this AlluxioFuseSpec.  # noqa: E501
-        :type: bool
-        """
-
-        self.__global = _global
-
-    @property
     def image(self):
         """Gets the image of this AlluxioFuseSpec.  # noqa: E501
 
@@ -254,6 +231,29 @@ class AlluxioFuseSpec(object):
         """
 
         self._image_pull_policy = image_pull_policy
+
+    @property
+    def image_pull_secrets(self):
+        """Gets the image_pull_secrets of this AlluxioFuseSpec.  # noqa: E501
+
+        ImagePullSecrets that will be used to pull images  # noqa: E501
+
+        :return: The image_pull_secrets of this AlluxioFuseSpec.  # noqa: E501
+        :rtype: list[V1LocalObjectReference]
+        """
+        return self._image_pull_secrets
+
+    @image_pull_secrets.setter
+    def image_pull_secrets(self, image_pull_secrets):
+        """Sets the image_pull_secrets of this AlluxioFuseSpec.
+
+        ImagePullSecrets that will be used to pull images  # noqa: E501
+
+        :param image_pull_secrets: The image_pull_secrets of this AlluxioFuseSpec.  # noqa: E501
+        :type: list[V1LocalObjectReference]
+        """
+
+        self._image_pull_secrets = image_pull_secrets
 
     @property
     def image_tag(self):

@@ -39,6 +39,7 @@ class AlluxioRuntimeSpec(object):
         'disable_prometheus': 'bool',
         'fuse': 'AlluxioFuseSpec',
         'hadoop_config': 'str',
+        'image_pull_secrets': 'list[V1LocalObjectReference]',
         'init_users': 'InitUsersSpec',
         'job_master': 'AlluxioCompTemplateSpec',
         'job_worker': 'AlluxioCompTemplateSpec',
@@ -61,6 +62,7 @@ class AlluxioRuntimeSpec(object):
         'disable_prometheus': 'disablePrometheus',
         'fuse': 'fuse',
         'hadoop_config': 'hadoopConfig',
+        'image_pull_secrets': 'imagePullSecrets',
         'init_users': 'initUsers',
         'job_master': 'jobMaster',
         'job_worker': 'jobWorker',
@@ -76,7 +78,7 @@ class AlluxioRuntimeSpec(object):
         'worker': 'worker'
     }
 
-    def __init__(self, alluxio_version=None, api_gateway=None, data=None, disable_prometheus=None, fuse=None, hadoop_config=None, init_users=None, job_master=None, job_worker=None, jvm_options=None, management=None, master=None, pod_metadata=None, properties=None, replicas=None, run_as=None, tieredstore=None, volumes=None, worker=None, local_vars_configuration=None):  # noqa: E501
+    def __init__(self, alluxio_version=None, api_gateway=None, data=None, disable_prometheus=None, fuse=None, hadoop_config=None, image_pull_secrets=None, init_users=None, job_master=None, job_worker=None, jvm_options=None, management=None, master=None, pod_metadata=None, properties=None, replicas=None, run_as=None, tieredstore=None, volumes=None, worker=None, local_vars_configuration=None):  # noqa: E501
         """AlluxioRuntimeSpec - a model defined in OpenAPI"""  # noqa: E501
         if local_vars_configuration is None:
             local_vars_configuration = Configuration()
@@ -88,6 +90,7 @@ class AlluxioRuntimeSpec(object):
         self._disable_prometheus = None
         self._fuse = None
         self._hadoop_config = None
+        self._image_pull_secrets = None
         self._init_users = None
         self._job_master = None
         self._job_worker = None
@@ -115,6 +118,8 @@ class AlluxioRuntimeSpec(object):
             self.fuse = fuse
         if hadoop_config is not None:
             self.hadoop_config = hadoop_config
+        if image_pull_secrets is not None:
+            self.image_pull_secrets = image_pull_secrets
         if init_users is not None:
             self.init_users = init_users
         if job_master is not None:
@@ -271,6 +276,29 @@ class AlluxioRuntimeSpec(object):
         """
 
         self._hadoop_config = hadoop_config
+
+    @property
+    def image_pull_secrets(self):
+        """Gets the image_pull_secrets of this AlluxioRuntimeSpec.  # noqa: E501
+
+        ImagePullSecrets that will be used to pull images  # noqa: E501
+
+        :return: The image_pull_secrets of this AlluxioRuntimeSpec.  # noqa: E501
+        :rtype: list[V1LocalObjectReference]
+        """
+        return self._image_pull_secrets
+
+    @image_pull_secrets.setter
+    def image_pull_secrets(self, image_pull_secrets):
+        """Sets the image_pull_secrets of this AlluxioRuntimeSpec.
+
+        ImagePullSecrets that will be used to pull images  # noqa: E501
+
+        :param image_pull_secrets: The image_pull_secrets of this AlluxioRuntimeSpec.  # noqa: E501
+        :type: list[V1LocalObjectReference]
+        """
+
+        self._image_pull_secrets = image_pull_secrets
 
     @property
     def init_users(self):

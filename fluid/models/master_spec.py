@@ -38,8 +38,10 @@ class MasterSpec(object):
         'image': 'str',
         'image_pull_policy': 'str',
         'image_tag': 'str',
+        'network_mode': 'str',
         'node_selector': 'dict(str, str)',
         'options': 'dict(str, str)',
+        'pod_metadata': 'PodMetadata',
         'ports': 'dict(str, int)',
         'replicas': 'int',
         'resources': 'V1ResourceRequirements',
@@ -52,15 +54,17 @@ class MasterSpec(object):
         'image': 'image',
         'image_pull_policy': 'imagePullPolicy',
         'image_tag': 'imageTag',
+        'network_mode': 'networkMode',
         'node_selector': 'nodeSelector',
         'options': 'options',
+        'pod_metadata': 'podMetadata',
         'ports': 'ports',
         'replicas': 'replicas',
         'resources': 'resources',
         'volume_mounts': 'volumeMounts'
     }
 
-    def __init__(self, endpoint=None, env=None, image=None, image_pull_policy=None, image_tag=None, node_selector=None, options=None, ports=None, replicas=None, resources=None, volume_mounts=None, local_vars_configuration=None):  # noqa: E501
+    def __init__(self, endpoint=None, env=None, image=None, image_pull_policy=None, image_tag=None, network_mode=None, node_selector=None, options=None, pod_metadata=None, ports=None, replicas=None, resources=None, volume_mounts=None, local_vars_configuration=None):  # noqa: E501
         """MasterSpec - a model defined in OpenAPI"""  # noqa: E501
         if local_vars_configuration is None:
             local_vars_configuration = Configuration()
@@ -71,8 +75,10 @@ class MasterSpec(object):
         self._image = None
         self._image_pull_policy = None
         self._image_tag = None
+        self._network_mode = None
         self._node_selector = None
         self._options = None
+        self._pod_metadata = None
         self._ports = None
         self._replicas = None
         self._resources = None
@@ -89,10 +95,14 @@ class MasterSpec(object):
             self.image_pull_policy = image_pull_policy
         if image_tag is not None:
             self.image_tag = image_tag
+        if network_mode is not None:
+            self.network_mode = network_mode
         if node_selector is not None:
             self.node_selector = node_selector
         if options is not None:
             self.options = options
+        if pod_metadata is not None:
+            self.pod_metadata = pod_metadata
         if ports is not None:
             self.ports = ports
         if replicas is not None:
@@ -150,7 +160,7 @@ class MasterSpec(object):
     def image(self):
         """Gets the image of this MasterSpec.  # noqa: E501
 
-        The image of Vineyard component. For Master, the default image is `bitnami/etcd` For Worker, the default image is `vineyardcloudnative/vineyardd` The default container registry is `docker.io`, you can change it by setting the image field  # noqa: E501
+        The image of Vineyard component. For Master, the default image is `registry.aliyuncs.com/vineyard/vineyardd` For Worker, the default image is `registry.aliyuncs.com/vineyard/vineyardd` The default container registry is `docker.io`, you can change it by setting the image field  # noqa: E501
 
         :return: The image of this MasterSpec.  # noqa: E501
         :rtype: str
@@ -161,7 +171,7 @@ class MasterSpec(object):
     def image(self, image):
         """Sets the image of this MasterSpec.
 
-        The image of Vineyard component. For Master, the default image is `bitnami/etcd` For Worker, the default image is `vineyardcloudnative/vineyardd` The default container registry is `docker.io`, you can change it by setting the image field  # noqa: E501
+        The image of Vineyard component. For Master, the default image is `registry.aliyuncs.com/vineyard/vineyardd` For Worker, the default image is `registry.aliyuncs.com/vineyard/vineyardd` The default container registry is `docker.io`, you can change it by setting the image field  # noqa: E501
 
         :param image: The image of this MasterSpec.  # noqa: E501
         :type: str
@@ -196,7 +206,7 @@ class MasterSpec(object):
     def image_tag(self):
         """Gets the image_tag of this MasterSpec.  # noqa: E501
 
-        The image tag of Vineyard component. For Master, the default image tag is `3.5.10`. For Worker, the default image tag is `latest`.  # noqa: E501
+        The image tag of Vineyard component. For Master, the default image tag is `v0.22.2`. For Worker, the default image tag is `v0.22.2`.  # noqa: E501
 
         :return: The image_tag of this MasterSpec.  # noqa: E501
         :rtype: str
@@ -207,13 +217,36 @@ class MasterSpec(object):
     def image_tag(self, image_tag):
         """Sets the image_tag of this MasterSpec.
 
-        The image tag of Vineyard component. For Master, the default image tag is `3.5.10`. For Worker, the default image tag is `latest`.  # noqa: E501
+        The image tag of Vineyard component. For Master, the default image tag is `v0.22.2`. For Worker, the default image tag is `v0.22.2`.  # noqa: E501
 
         :param image_tag: The image_tag of this MasterSpec.  # noqa: E501
         :type: str
         """
 
         self._image_tag = image_tag
+
+    @property
+    def network_mode(self):
+        """Gets the network_mode of this MasterSpec.  # noqa: E501
+
+        Whether to use hostnetwork or not Default is HostNetwork  # noqa: E501
+
+        :return: The network_mode of this MasterSpec.  # noqa: E501
+        :rtype: str
+        """
+        return self._network_mode
+
+    @network_mode.setter
+    def network_mode(self, network_mode):
+        """Sets the network_mode of this MasterSpec.
+
+        Whether to use hostnetwork or not Default is HostNetwork  # noqa: E501
+
+        :param network_mode: The network_mode of this MasterSpec.  # noqa: E501
+        :type: str
+        """
+
+        self._network_mode = network_mode
 
     @property
     def node_selector(self):
@@ -260,6 +293,27 @@ class MasterSpec(object):
         """
 
         self._options = options
+
+    @property
+    def pod_metadata(self):
+        """Gets the pod_metadata of this MasterSpec.  # noqa: E501
+
+
+        :return: The pod_metadata of this MasterSpec.  # noqa: E501
+        :rtype: PodMetadata
+        """
+        return self._pod_metadata
+
+    @pod_metadata.setter
+    def pod_metadata(self, pod_metadata):
+        """Sets the pod_metadata of this MasterSpec.
+
+
+        :param pod_metadata: The pod_metadata of this MasterSpec.  # noqa: E501
+        :type: PodMetadata
+        """
+
+        self._pod_metadata = pod_metadata
 
     @property
     def ports(self):

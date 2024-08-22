@@ -8,7 +8,6 @@ Name | Type | Description | Notes
 **clean_policy** | **str** | CleanPolicy decides when to clean JindoFS Fuse pods. Currently Fluid supports two policies: OnDemand and OnRuntimeDeleted OnDemand cleans fuse pod once th fuse pod on some node is not needed OnRuntimeDeleted cleans fuse pod only when the cache runtime is deleted Defaults to OnRuntimeDeleted | [optional] 
 **disabled** | **bool** | If disable JindoFS fuse | [optional] 
 **env** | **dict(str, str)** | Environment variables that will be used by Jindo Fuse | [optional] 
-**_global** | **bool** | If the fuse client should be deployed in global mode, otherwise the affinity should be considered | [optional] 
 **image** | **str** | Image for Jindo Fuse(e.g. jindo/jindo-fuse) | [optional] 
 **image_pull_policy** | **str** | One of the three policies: &#x60;Always&#x60;, &#x60;IfNotPresent&#x60;, &#x60;Never&#x60; | [optional] 
 **image_tag** | **str** | Image Tag for Jindo Fuse(e.g. 2.3.0-SNAPSHOT) | [optional] 

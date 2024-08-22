@@ -18,6 +18,7 @@ from kubernetes.client import *
 
 # import models into model package
 from fluid.models.api_gateway_status import APIGatewayStatus
+from fluid.models.affinity_strategy import AffinityStrategy
 from fluid.models.alluxio_comp_template_spec import AlluxioCompTemplateSpec
 from fluid.models.alluxio_fuse_spec import AlluxioFuseSpec
 from fluid.models.alluxio_runtime import AlluxioRuntime
@@ -84,7 +85,9 @@ from fluid.models.os_advise import OSAdvise
 from fluid.models.operation_ref import OperationRef
 from fluid.models.operation_status import OperationStatus
 from fluid.models.pod_metadata import PodMetadata
+from fluid.models.prefer import Prefer
 from fluid.models.processor import Processor
+from fluid.models.require import Require
 from fluid.models.runtime import Runtime
 from fluid.models.runtime_condition import RuntimeCondition
 from fluid.models.runtime_management import RuntimeManagement
@@ -105,10 +108,10 @@ from fluid.models.thin_runtime_spec import ThinRuntimeSpec
 from fluid.models.tiered_store import TieredStore
 from fluid.models.user import User
 from fluid.models.version_spec import VersionSpec
+from fluid.models.vineyard_client_socket_spec import VineyardClientSocketSpec
 from fluid.models.vineyard_comp_template_spec import VineyardCompTemplateSpec
 from fluid.models.vineyard_runtime import VineyardRuntime
 from fluid.models.vineyard_runtime_list import VineyardRuntimeList
 from fluid.models.vineyard_runtime_spec import VineyardRuntimeSpec
-from fluid.models.vineyard_sock_spec import VineyardSockSpec
 from fluid.models.volume_source import VolumeSource
 from fluid.models.waiting_status import WaitingStatus

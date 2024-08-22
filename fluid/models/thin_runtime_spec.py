@@ -35,6 +35,7 @@ class ThinRuntimeSpec(object):
     openapi_types = {
         'disable_prometheus': 'bool',
         'fuse': 'ThinFuseSpec',
+        'management': 'RuntimeManagement',
         'profile_name': 'str',
         'replicas': 'int',
         'run_as': 'User',
@@ -46,6 +47,7 @@ class ThinRuntimeSpec(object):
     attribute_map = {
         'disable_prometheus': 'disablePrometheus',
         'fuse': 'fuse',
+        'management': 'management',
         'profile_name': 'profileName',
         'replicas': 'replicas',
         'run_as': 'runAs',
@@ -54,7 +56,7 @@ class ThinRuntimeSpec(object):
         'worker': 'worker'
     }
 
-    def __init__(self, disable_prometheus=None, fuse=None, profile_name=None, replicas=None, run_as=None, tieredstore=None, volumes=None, worker=None, local_vars_configuration=None):  # noqa: E501
+    def __init__(self, disable_prometheus=None, fuse=None, management=None, profile_name=None, replicas=None, run_as=None, tieredstore=None, volumes=None, worker=None, local_vars_configuration=None):  # noqa: E501
         """ThinRuntimeSpec - a model defined in OpenAPI"""  # noqa: E501
         if local_vars_configuration is None:
             local_vars_configuration = Configuration()
@@ -62,6 +64,7 @@ class ThinRuntimeSpec(object):
 
         self._disable_prometheus = None
         self._fuse = None
+        self._management = None
         self._profile_name = None
         self._replicas = None
         self._run_as = None
@@ -74,6 +77,8 @@ class ThinRuntimeSpec(object):
             self.disable_prometheus = disable_prometheus
         if fuse is not None:
             self.fuse = fuse
+        if management is not None:
+            self.management = management
         if profile_name is not None:
             self.profile_name = profile_name
         if replicas is not None:
@@ -130,6 +135,27 @@ class ThinRuntimeSpec(object):
         """
 
         self._fuse = fuse
+
+    @property
+    def management(self):
+        """Gets the management of this ThinRuntimeSpec.  # noqa: E501
+
+
+        :return: The management of this ThinRuntimeSpec.  # noqa: E501
+        :rtype: RuntimeManagement
+        """
+        return self._management
+
+    @management.setter
+    def management(self, management):
+        """Sets the management of this ThinRuntimeSpec.
+
+
+        :param management: The management of this ThinRuntimeSpec.  # noqa: E501
+        :type: RuntimeManagement
+        """
+
+        self._management = management
 
     @property
     def profile_name(self):

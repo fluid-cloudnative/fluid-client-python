@@ -33,6 +33,7 @@ class OperationRef(object):
                             and the value is json key in definition.
     """
     openapi_types = {
+        'affinity_strategy': 'AffinityStrategy',
         'api_version': 'str',
         'kind': 'str',
         'name': 'str',
@@ -40,30 +41,55 @@ class OperationRef(object):
     }
 
     attribute_map = {
+        'affinity_strategy': 'affinityStrategy',
         'api_version': 'apiVersion',
         'kind': 'kind',
         'name': 'name',
         'namespace': 'namespace'
     }
 
-    def __init__(self, api_version=None, kind='', name='', namespace=None, local_vars_configuration=None):  # noqa: E501
+    def __init__(self, affinity_strategy=None, api_version=None, kind='', name='', namespace=None, local_vars_configuration=None):  # noqa: E501
         """OperationRef - a model defined in OpenAPI"""  # noqa: E501
         if local_vars_configuration is None:
             local_vars_configuration = Configuration()
         self.local_vars_configuration = local_vars_configuration
 
+        self._affinity_strategy = None
         self._api_version = None
         self._kind = None
         self._name = None
         self._namespace = None
         self.discriminator = None
 
+        if affinity_strategy is not None:
+            self.affinity_strategy = affinity_strategy
         if api_version is not None:
             self.api_version = api_version
         self.kind = kind
         self.name = name
         if namespace is not None:
             self.namespace = namespace
+
+    @property
+    def affinity_strategy(self):
+        """Gets the affinity_strategy of this OperationRef.  # noqa: E501
+
+
+        :return: The affinity_strategy of this OperationRef.  # noqa: E501
+        :rtype: AffinityStrategy
+        """
+        return self._affinity_strategy
+
+    @affinity_strategy.setter
+    def affinity_strategy(self, affinity_strategy):
+        """Sets the affinity_strategy of this OperationRef.
+
+
+        :param affinity_strategy: The affinity_strategy of this OperationRef.  # noqa: E501
+        :type: AffinityStrategy
+        """
+
+        self._affinity_strategy = affinity_strategy
 
     @property
     def api_version(self):

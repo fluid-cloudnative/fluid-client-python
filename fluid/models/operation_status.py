@@ -38,6 +38,7 @@ class OperationStatus(object):
         'infos': 'dict(str, str)',
         'last_schedule_time': 'datetime',
         'last_successful_time': 'datetime',
+        'node_affinity': 'V1NodeAffinity',
         'phase': 'str',
         'waiting_for': 'WaitingStatus'
     }
@@ -48,11 +49,12 @@ class OperationStatus(object):
         'infos': 'infos',
         'last_schedule_time': 'lastScheduleTime',
         'last_successful_time': 'lastSuccessfulTime',
+        'node_affinity': 'nodeAffinity',
         'phase': 'phase',
         'waiting_for': 'waitingFor'
     }
 
-    def __init__(self, conditions=None, duration='', infos=None, last_schedule_time=None, last_successful_time=None, phase='', waiting_for=None, local_vars_configuration=None):  # noqa: E501
+    def __init__(self, conditions=None, duration='', infos=None, last_schedule_time=None, last_successful_time=None, node_affinity=None, phase='', waiting_for=None, local_vars_configuration=None):  # noqa: E501
         """OperationStatus - a model defined in OpenAPI"""  # noqa: E501
         if local_vars_configuration is None:
             local_vars_configuration = Configuration()
@@ -63,6 +65,7 @@ class OperationStatus(object):
         self._infos = None
         self._last_schedule_time = None
         self._last_successful_time = None
+        self._node_affinity = None
         self._phase = None
         self._waiting_for = None
         self.discriminator = None
@@ -75,6 +78,8 @@ class OperationStatus(object):
             self.last_schedule_time = last_schedule_time
         if last_successful_time is not None:
             self.last_successful_time = last_successful_time
+        if node_affinity is not None:
+            self.node_affinity = node_affinity
         self.phase = phase
         if waiting_for is not None:
             self.waiting_for = waiting_for
@@ -193,6 +198,27 @@ class OperationStatus(object):
         """
 
         self._last_successful_time = last_successful_time
+
+    @property
+    def node_affinity(self):
+        """Gets the node_affinity of this OperationStatus.  # noqa: E501
+
+
+        :return: The node_affinity of this OperationStatus.  # noqa: E501
+        :rtype: V1NodeAffinity
+        """
+        return self._node_affinity
+
+    @node_affinity.setter
+    def node_affinity(self, node_affinity):
+        """Sets the node_affinity of this OperationStatus.
+
+
+        :param node_affinity: The node_affinity of this OperationStatus.  # noqa: E501
+        :type: V1NodeAffinity
+        """
+
+        self._node_affinity = node_affinity
 
     @property
     def phase(self):
