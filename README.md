@@ -103,6 +103,15 @@ if __name__ == '__main__':
     main()
 ```
 
+## Versioning
+
+Fluid Python SDK's version **ALWAYS** follows the Fluid's version as long as they share the fully compatible APIs. For example, if a released version of Fluid is v1.0.1, Fluid Python SDK with version prefix "v1.0.1" is guaranteed to have 
+same APIs as the released Fluid version. 
+
+Fluid Python SDK may have "post" version that updates the inner code but keep the APIs untouched (e.g. hotfixes). For example, "v1.0.1.post1" is a post version of "v1.0.1" which includes the latest
+changes.
+
+
 ## Documentation For Models
 
  - [APIGatewayStatus](docs/APIGatewayStatus.md)

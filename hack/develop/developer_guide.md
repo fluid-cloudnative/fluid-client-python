@@ -69,13 +69,18 @@ Now starts the Python interpreter and you can import the SDK:
 
 4. Cut a release and publish it to PyPi
 
-   Similarly, to cut a release and publish it to PyPi, tag the latest commit with `vX.Y.Z` and use `git push --tags` to
+   Similarly, to cut a release and publish it to PyPi, tag the latest commit with `vX.Y.Z` or `vX.Y.Z.postN`(See [Versioning](../../README.md#Versioning)) and use `git push --tags` to
    trigger
    a [GitHub Workflow](https://github.com/fluid-cloudnative/fluid-client-python/blob/master/.github/workflows/release.yml)
    to automatically build and publish the package to PyPi.
    For example:
     ```
+    # first release (compatible APIs with Fluid v1.0.1)
     git tag v1.0.1
+   
+    # second release (compatible APIs with Fluid v1.0.1)
+    git tag v1.0.1.post1
+   
     git push --tags origin
     ```
 
