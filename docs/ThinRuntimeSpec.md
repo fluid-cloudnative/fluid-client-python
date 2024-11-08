@@ -6,6 +6,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **disable_prometheus** | **bool** | Disable monitoring for Runtime Prometheus is enabled by default | [optional] 
 **fuse** | [**ThinFuseSpec**](ThinFuseSpec.md) |  | [optional] 
+**image_pull_secrets** | [**list[V1LocalObjectReference]**](V1LocalObjectReference.md) | ImagePullSecrets that will be used to pull images | [optional] 
 **management** | [**RuntimeManagement**](RuntimeManagement.md) |  | [optional] 
 **profile_name** | **str** | The specific runtime profile name, empty value is used for handling datasets which mount another dataset | [optional] 
 **replicas** | **int** | The replicas of the worker, need to be specified | [optional] 

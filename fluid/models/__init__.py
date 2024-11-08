@@ -26,6 +26,7 @@ from fluid.models.alluxio_runtime_list import AlluxioRuntimeList
 from fluid.models.alluxio_runtime_spec import AlluxioRuntimeSpec
 from fluid.models.cacheable_node_affinity import CacheableNodeAffinity
 from fluid.models.clean_cache_policy import CleanCachePolicy
+from fluid.models.client_metrics import ClientMetrics
 from fluid.models.condition import Condition
 from fluid.models.data import Data
 from fluid.models.data_backup import DataBackup
@@ -82,6 +83,7 @@ from fluid.models.metadata import Metadata
 from fluid.models.metadata_sync_policy import MetadataSyncPolicy
 from fluid.models.mount import Mount
 from fluid.models.os_advise import OSAdvise
+from fluid.models.object_ref import ObjectRef
 from fluid.models.operation_ref import OperationRef
 from fluid.models.operation_status import OperationStatus
 from fluid.models.pod_metadata import PodMetadata

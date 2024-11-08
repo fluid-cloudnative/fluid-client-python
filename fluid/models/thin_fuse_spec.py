@@ -39,6 +39,7 @@ class ThinFuseSpec(object):
         'env': 'list[V1EnvVar]',
         'image': 'str',
         'image_pull_policy': 'str',
+        'image_pull_secrets': 'list[V1LocalObjectReference]',
         'image_tag': 'str',
         'liveness_probe': 'V1Probe',
         'network_mode': 'str',
@@ -57,6 +58,7 @@ class ThinFuseSpec(object):
         'env': 'env',
         'image': 'image',
         'image_pull_policy': 'imagePullPolicy',
+        'image_pull_secrets': 'imagePullSecrets',
         'image_tag': 'imageTag',
         'liveness_probe': 'livenessProbe',
         'network_mode': 'networkMode',
@@ -68,7 +70,7 @@ class ThinFuseSpec(object):
         'volume_mounts': 'volumeMounts'
     }
 
-    def __init__(self, args=None, clean_policy=None, command=None, env=None, image=None, image_pull_policy=None, image_tag=None, liveness_probe=None, network_mode=None, node_selector=None, options=None, ports=None, readiness_probe=None, resources=None, volume_mounts=None, local_vars_configuration=None):  # noqa: E501
+    def __init__(self, args=None, clean_policy=None, command=None, env=None, image=None, image_pull_policy=None, image_pull_secrets=None, image_tag=None, liveness_probe=None, network_mode=None, node_selector=None, options=None, ports=None, readiness_probe=None, resources=None, volume_mounts=None, local_vars_configuration=None):  # noqa: E501
         """ThinFuseSpec - a model defined in OpenAPI"""  # noqa: E501
         if local_vars_configuration is None:
             local_vars_configuration = Configuration()
@@ -80,6 +82,7 @@ class ThinFuseSpec(object):
         self._env = None
         self._image = None
         self._image_pull_policy = None
+        self._image_pull_secrets = None
         self._image_tag = None
         self._liveness_probe = None
         self._network_mode = None
@@ -103,6 +106,8 @@ class ThinFuseSpec(object):
             self.image = image
         if image_pull_policy is not None:
             self.image_pull_policy = image_pull_policy
+        if image_pull_secrets is not None:
+            self.image_pull_secrets = image_pull_secrets
         if image_tag is not None:
             self.image_tag = image_tag
         if liveness_probe is not None:
@@ -259,6 +264,29 @@ class ThinFuseSpec(object):
         """
 
         self._image_pull_policy = image_pull_policy
+
+    @property
+    def image_pull_secrets(self):
+        """Gets the image_pull_secrets of this ThinFuseSpec.  # noqa: E501
+
+        ImagePullSecrets that will be used to pull images  # noqa: E501
+
+        :return: The image_pull_secrets of this ThinFuseSpec.  # noqa: E501
+        :rtype: list[V1LocalObjectReference]
+        """
+        return self._image_pull_secrets
+
+    @image_pull_secrets.setter
+    def image_pull_secrets(self, image_pull_secrets):
+        """Sets the image_pull_secrets of this ThinFuseSpec.
+
+        ImagePullSecrets that will be used to pull images  # noqa: E501
+
+        :param image_pull_secrets: The image_pull_secrets of this ThinFuseSpec.  # noqa: E501
+        :type: list[V1LocalObjectReference]
+        """
+
+        self._image_pull_secrets = image_pull_secrets
 
     @property
     def image_tag(self):

@@ -3,6 +3,7 @@
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**depend_on** | [**ObjectRef**](ObjectRef.md) |  | [optional] 
 **policy** | **str** | Policy one of: \&quot;\&quot;, \&quot;Require\&quot;, \&quot;Prefer\&quot; | [optional] 
 **prefers** | [**list[Prefer]**](Prefer.md) |  | [optional] 
 **requires** | [**list[Require]**](Require.md) |  | [optional] 

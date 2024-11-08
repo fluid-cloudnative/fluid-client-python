@@ -39,9 +39,11 @@ class JindoFuseSpec(object):
         'env': 'dict(str, str)',
         'image': 'str',
         'image_pull_policy': 'str',
+        'image_pull_secrets': 'list[V1LocalObjectReference]',
         'image_tag': 'str',
         'labels': 'dict(str, str)',
         'log_config': 'dict(str, str)',
+        'metrics': 'ClientMetrics',
         'node_selector': 'dict(str, str)',
         'pod_metadata': 'PodMetadata',
         'properties': 'dict(str, str)',
@@ -56,9 +58,11 @@ class JindoFuseSpec(object):
         'env': 'env',
         'image': 'image',
         'image_pull_policy': 'imagePullPolicy',
+        'image_pull_secrets': 'imagePullSecrets',
         'image_tag': 'imageTag',
         'labels': 'labels',
         'log_config': 'logConfig',
+        'metrics': 'metrics',
         'node_selector': 'nodeSelector',
         'pod_metadata': 'podMetadata',
         'properties': 'properties',
@@ -66,7 +70,7 @@ class JindoFuseSpec(object):
         'tolerations': 'tolerations'
     }
 
-    def __init__(self, args=None, clean_policy=None, disabled=None, env=None, image=None, image_pull_policy=None, image_tag=None, labels=None, log_config=None, node_selector=None, pod_metadata=None, properties=None, resources=None, tolerations=None, local_vars_configuration=None):  # noqa: E501
+    def __init__(self, args=None, clean_policy=None, disabled=None, env=None, image=None, image_pull_policy=None, image_pull_secrets=None, image_tag=None, labels=None, log_config=None, metrics=None, node_selector=None, pod_metadata=None, properties=None, resources=None, tolerations=None, local_vars_configuration=None):  # noqa: E501
         """JindoFuseSpec - a model defined in OpenAPI"""  # noqa: E501
         if local_vars_configuration is None:
             local_vars_configuration = Configuration()
@@ -78,9 +82,11 @@ class JindoFuseSpec(object):
         self._env = None
         self._image = None
         self._image_pull_policy = None
+        self._image_pull_secrets = None
         self._image_tag = None
         self._labels = None
         self._log_config = None
+        self._metrics = None
         self._node_selector = None
         self._pod_metadata = None
         self._properties = None
@@ -100,12 +106,16 @@ class JindoFuseSpec(object):
             self.image = image
         if image_pull_policy is not None:
             self.image_pull_policy = image_pull_policy
+        if image_pull_secrets is not None:
+            self.image_pull_secrets = image_pull_secrets
         if image_tag is not None:
             self.image_tag = image_tag
         if labels is not None:
             self.labels = labels
         if log_config is not None:
             self.log_config = log_config
+        if metrics is not None:
+            self.metrics = metrics
         if node_selector is not None:
             self.node_selector = node_selector
         if pod_metadata is not None:
@@ -256,6 +266,29 @@ class JindoFuseSpec(object):
         self._image_pull_policy = image_pull_policy
 
     @property
+    def image_pull_secrets(self):
+        """Gets the image_pull_secrets of this JindoFuseSpec.  # noqa: E501
+
+        ImagePullSecrets that will be used to pull images  # noqa: E501
+
+        :return: The image_pull_secrets of this JindoFuseSpec.  # noqa: E501
+        :rtype: list[V1LocalObjectReference]
+        """
+        return self._image_pull_secrets
+
+    @image_pull_secrets.setter
+    def image_pull_secrets(self, image_pull_secrets):
+        """Sets the image_pull_secrets of this JindoFuseSpec.
+
+        ImagePullSecrets that will be used to pull images  # noqa: E501
+
+        :param image_pull_secrets: The image_pull_secrets of this JindoFuseSpec.  # noqa: E501
+        :type: list[V1LocalObjectReference]
+        """
+
+        self._image_pull_secrets = image_pull_secrets
+
+    @property
     def image_tag(self):
         """Gets the image_tag of this JindoFuseSpec.  # noqa: E501
 
@@ -321,6 +354,27 @@ class JindoFuseSpec(object):
         """
 
         self._log_config = log_config
+
+    @property
+    def metrics(self):
+        """Gets the metrics of this JindoFuseSpec.  # noqa: E501
+
+
+        :return: The metrics of this JindoFuseSpec.  # noqa: E501
+        :rtype: ClientMetrics
+        """
+        return self._metrics
+
+    @metrics.setter
+    def metrics(self, metrics):
+        """Sets the metrics of this JindoFuseSpec.
+
+
+        :param metrics: The metrics of this JindoFuseSpec.  # noqa: E501
+        :type: ClientMetrics
+        """
+
+        self._metrics = metrics
 
     @property
     def node_selector(self):

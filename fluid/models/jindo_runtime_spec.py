@@ -36,6 +36,7 @@ class JindoRuntimeSpec(object):
         'clean_cache_policy': 'CleanCachePolicy',
         'fuse': 'JindoFuseSpec',
         'hadoop_config': 'str',
+        'image_pull_secrets': 'list[V1LocalObjectReference]',
         'jindo_version': 'VersionSpec',
         'labels': 'dict(str, str)',
         'log_config': 'dict(str, str)',
@@ -56,6 +57,7 @@ class JindoRuntimeSpec(object):
         'clean_cache_policy': 'cleanCachePolicy',
         'fuse': 'fuse',
         'hadoop_config': 'hadoopConfig',
+        'image_pull_secrets': 'imagePullSecrets',
         'jindo_version': 'jindoVersion',
         'labels': 'labels',
         'log_config': 'logConfig',
@@ -72,7 +74,7 @@ class JindoRuntimeSpec(object):
         'worker': 'worker'
     }
 
-    def __init__(self, clean_cache_policy=None, fuse=None, hadoop_config=None, jindo_version=None, labels=None, log_config=None, master=None, networkmode=None, pod_metadata=None, properties=None, replicas=None, run_as=None, secret=None, tieredstore=None, user=None, volumes=None, worker=None, local_vars_configuration=None):  # noqa: E501
+    def __init__(self, clean_cache_policy=None, fuse=None, hadoop_config=None, image_pull_secrets=None, jindo_version=None, labels=None, log_config=None, master=None, networkmode=None, pod_metadata=None, properties=None, replicas=None, run_as=None, secret=None, tieredstore=None, user=None, volumes=None, worker=None, local_vars_configuration=None):  # noqa: E501
         """JindoRuntimeSpec - a model defined in OpenAPI"""  # noqa: E501
         if local_vars_configuration is None:
             local_vars_configuration = Configuration()
@@ -81,6 +83,7 @@ class JindoRuntimeSpec(object):
         self._clean_cache_policy = None
         self._fuse = None
         self._hadoop_config = None
+        self._image_pull_secrets = None
         self._jindo_version = None
         self._labels = None
         self._log_config = None
@@ -103,6 +106,8 @@ class JindoRuntimeSpec(object):
             self.fuse = fuse
         if hadoop_config is not None:
             self.hadoop_config = hadoop_config
+        if image_pull_secrets is not None:
+            self.image_pull_secrets = image_pull_secrets
         if jindo_version is not None:
             self.jindo_version = jindo_version
         if labels is not None:
@@ -196,6 +201,29 @@ class JindoRuntimeSpec(object):
         """
 
         self._hadoop_config = hadoop_config
+
+    @property
+    def image_pull_secrets(self):
+        """Gets the image_pull_secrets of this JindoRuntimeSpec.  # noqa: E501
+
+        ImagePullSecrets that will be used to pull images  # noqa: E501
+
+        :return: The image_pull_secrets of this JindoRuntimeSpec.  # noqa: E501
+        :rtype: list[V1LocalObjectReference]
+        """
+        return self._image_pull_secrets
+
+    @image_pull_secrets.setter
+    def image_pull_secrets(self, image_pull_secrets):
+        """Sets the image_pull_secrets of this JindoRuntimeSpec.
+
+        ImagePullSecrets that will be used to pull images  # noqa: E501
+
+        :param image_pull_secrets: The image_pull_secrets of this JindoRuntimeSpec.  # noqa: E501
+        :type: list[V1LocalObjectReference]
+        """
+
+        self._image_pull_secrets = image_pull_secrets
 
     @property
     def jindo_version(self):

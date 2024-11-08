@@ -33,34 +33,60 @@ class AffinityStrategy(object):
                             and the value is json key in definition.
     """
     openapi_types = {
+        'depend_on': 'ObjectRef',
         'policy': 'str',
         'prefers': 'list[Prefer]',
         'requires': 'list[Require]'
     }
 
     attribute_map = {
+        'depend_on': 'dependOn',
         'policy': 'policy',
         'prefers': 'prefers',
         'requires': 'requires'
     }
 
-    def __init__(self, policy=None, prefers=None, requires=None, local_vars_configuration=None):  # noqa: E501
+    def __init__(self, depend_on=None, policy=None, prefers=None, requires=None, local_vars_configuration=None):  # noqa: E501
         """AffinityStrategy - a model defined in OpenAPI"""  # noqa: E501
         if local_vars_configuration is None:
             local_vars_configuration = Configuration()
         self.local_vars_configuration = local_vars_configuration
 
+        self._depend_on = None
         self._policy = None
         self._prefers = None
         self._requires = None
         self.discriminator = None
 
+        if depend_on is not None:
+            self.depend_on = depend_on
         if policy is not None:
             self.policy = policy
         if prefers is not None:
             self.prefers = prefers
         if requires is not None:
             self.requires = requires
+
+    @property
+    def depend_on(self):
+        """Gets the depend_on of this AffinityStrategy.  # noqa: E501
+
+
+        :return: The depend_on of this AffinityStrategy.  # noqa: E501
+        :rtype: ObjectRef
+        """
+        return self._depend_on
+
+    @depend_on.setter
+    def depend_on(self, depend_on):
+        """Sets the depend_on of this AffinityStrategy.
+
+
+        :param depend_on: The depend_on of this AffinityStrategy.  # noqa: E501
+        :type: ObjectRef
+        """
+
+        self._depend_on = depend_on
 
     @property
     def policy(self):

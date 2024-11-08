@@ -8,6 +8,7 @@ Name | Type | Description | Notes
 **env** | [**list[V1EnvVar]**](V1EnvVar.md) | Environment variables that will be used by thinRuntime component. | [optional] 
 **image** | **str** | Image for thinRuntime fuse | [optional] 
 **image_pull_policy** | **str** | One of the three policies: &#x60;Always&#x60;, &#x60;IfNotPresent&#x60;, &#x60;Never&#x60; | [optional] 
+**image_pull_secrets** | [**list[V1LocalObjectReference]**](V1LocalObjectReference.md) | ImagePullSecrets that will be used to pull images | [optional] 
 **image_tag** | **str** | Image for thinRuntime fuse | [optional] 
 **liveness_probe** | [**V1Probe**](V1Probe.md) |  | [optional] 
 **network_mode** | **str** | Whether to use hostnetwork or not | [optional] 

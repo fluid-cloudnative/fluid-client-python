@@ -35,6 +35,7 @@ class ThinRuntimeProfileSpec(object):
     openapi_types = {
         'file_system_type': 'str',
         'fuse': 'ThinFuseSpec',
+        'image_pull_secrets': 'list[V1LocalObjectReference]',
         'node_publish_secret_policy': 'str',
         'volumes': 'list[V1Volume]',
         'worker': 'ThinCompTemplateSpec'
@@ -43,12 +44,13 @@ class ThinRuntimeProfileSpec(object):
     attribute_map = {
         'file_system_type': 'fileSystemType',
         'fuse': 'fuse',
+        'image_pull_secrets': 'imagePullSecrets',
         'node_publish_secret_policy': 'nodePublishSecretPolicy',
         'volumes': 'volumes',
         'worker': 'worker'
     }
 
-    def __init__(self, file_system_type='', fuse=None, node_publish_secret_policy=None, volumes=None, worker=None, local_vars_configuration=None):  # noqa: E501
+    def __init__(self, file_system_type='', fuse=None, image_pull_secrets=None, node_publish_secret_policy=None, volumes=None, worker=None, local_vars_configuration=None):  # noqa: E501
         """ThinRuntimeProfileSpec - a model defined in OpenAPI"""  # noqa: E501
         if local_vars_configuration is None:
             local_vars_configuration = Configuration()
@@ -56,6 +58,7 @@ class ThinRuntimeProfileSpec(object):
 
         self._file_system_type = None
         self._fuse = None
+        self._image_pull_secrets = None
         self._node_publish_secret_policy = None
         self._volumes = None
         self._worker = None
@@ -64,6 +67,8 @@ class ThinRuntimeProfileSpec(object):
         self.file_system_type = file_system_type
         if fuse is not None:
             self.fuse = fuse
+        if image_pull_secrets is not None:
+            self.image_pull_secrets = image_pull_secrets
         if node_publish_secret_policy is not None:
             self.node_publish_secret_policy = node_publish_secret_policy
         if volumes is not None:
@@ -116,6 +121,29 @@ class ThinRuntimeProfileSpec(object):
         """
 
         self._fuse = fuse
+
+    @property
+    def image_pull_secrets(self):
+        """Gets the image_pull_secrets of this ThinRuntimeProfileSpec.  # noqa: E501
+
+        ImagePullSecrets that will be used to pull images  # noqa: E501
+
+        :return: The image_pull_secrets of this ThinRuntimeProfileSpec.  # noqa: E501
+        :rtype: list[V1LocalObjectReference]
+        """
+        return self._image_pull_secrets
+
+    @image_pull_secrets.setter
+    def image_pull_secrets(self, image_pull_secrets):
+        """Sets the image_pull_secrets of this ThinRuntimeProfileSpec.
+
+        ImagePullSecrets that will be used to pull images  # noqa: E501
+
+        :param image_pull_secrets: The image_pull_secrets of this ThinRuntimeProfileSpec.  # noqa: E501
+        :type: list[V1LocalObjectReference]
+        """
+
+        self._image_pull_secrets = image_pull_secrets
 
     @property
     def node_publish_secret_policy(self):

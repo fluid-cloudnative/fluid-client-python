@@ -35,6 +35,7 @@ class ThinRuntimeSpec(object):
     openapi_types = {
         'disable_prometheus': 'bool',
         'fuse': 'ThinFuseSpec',
+        'image_pull_secrets': 'list[V1LocalObjectReference]',
         'management': 'RuntimeManagement',
         'profile_name': 'str',
         'replicas': 'int',
@@ -47,6 +48,7 @@ class ThinRuntimeSpec(object):
     attribute_map = {
         'disable_prometheus': 'disablePrometheus',
         'fuse': 'fuse',
+        'image_pull_secrets': 'imagePullSecrets',
         'management': 'management',
         'profile_name': 'profileName',
         'replicas': 'replicas',
@@ -56,7 +58,7 @@ class ThinRuntimeSpec(object):
         'worker': 'worker'
     }
 
-    def __init__(self, disable_prometheus=None, fuse=None, management=None, profile_name=None, replicas=None, run_as=None, tieredstore=None, volumes=None, worker=None, local_vars_configuration=None):  # noqa: E501
+    def __init__(self, disable_prometheus=None, fuse=None, image_pull_secrets=None, management=None, profile_name=None, replicas=None, run_as=None, tieredstore=None, volumes=None, worker=None, local_vars_configuration=None):  # noqa: E501
         """ThinRuntimeSpec - a model defined in OpenAPI"""  # noqa: E501
         if local_vars_configuration is None:
             local_vars_configuration = Configuration()
@@ -64,6 +66,7 @@ class ThinRuntimeSpec(object):
 
         self._disable_prometheus = None
         self._fuse = None
+        self._image_pull_secrets = None
         self._management = None
         self._profile_name = None
         self._replicas = None
@@ -77,6 +80,8 @@ class ThinRuntimeSpec(object):
             self.disable_prometheus = disable_prometheus
         if fuse is not None:
             self.fuse = fuse
+        if image_pull_secrets is not None:
+            self.image_pull_secrets = image_pull_secrets
         if management is not None:
             self.management = management
         if profile_name is not None:
@@ -135,6 +140,29 @@ class ThinRuntimeSpec(object):
         """
 
         self._fuse = fuse
+
+    @property
+    def image_pull_secrets(self):
+        """Gets the image_pull_secrets of this ThinRuntimeSpec.  # noqa: E501
+
+        ImagePullSecrets that will be used to pull images  # noqa: E501
+
+        :return: The image_pull_secrets of this ThinRuntimeSpec.  # noqa: E501
+        :rtype: list[V1LocalObjectReference]
+        """
+        return self._image_pull_secrets
+
+    @image_pull_secrets.setter
+    def image_pull_secrets(self, image_pull_secrets):
+        """Sets the image_pull_secrets of this ThinRuntimeSpec.
+
+        ImagePullSecrets that will be used to pull images  # noqa: E501
+
+        :param image_pull_secrets: The image_pull_secrets of this ThinRuntimeSpec.  # noqa: E501
+        :type: list[V1LocalObjectReference]
+        """
+
+        self._image_pull_secrets = image_pull_secrets
 
     @property
     def management(self):

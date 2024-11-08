@@ -6,6 +6,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **disabled** | **bool** | If disable JindoFS master or worker | [optional] 
 **env** | **dict(str, str)** | Environment variables that will be used by Jindo component. &lt;br&gt; | [optional] 
+**image_pull_secrets** | [**list[V1LocalObjectReference]**](V1LocalObjectReference.md) | ImagePullSecrets that will be used to pull images | [optional] 
 **labels** | **dict(str, str)** | Labels will be added on JindoFS Master or Worker pods. DEPRECATED: This is a deprecated field. Please use PodMetadata instead. Note: this field is set to be exclusive with PodMetadata.Labels | [optional] 
 **node_selector** | **dict(str, str)** | NodeSelector is a selector which must be true for the master to fit on a node | [optional] 
 **pod_metadata** | [**PodMetadata**](PodMetadata.md) |  | [optional] 

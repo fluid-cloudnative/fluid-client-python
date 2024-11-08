@@ -35,6 +35,7 @@ class JindoCompTemplateSpec(object):
     openapi_types = {
         'disabled': 'bool',
         'env': 'dict(str, str)',
+        'image_pull_secrets': 'list[V1LocalObjectReference]',
         'labels': 'dict(str, str)',
         'node_selector': 'dict(str, str)',
         'pod_metadata': 'PodMetadata',
@@ -49,6 +50,7 @@ class JindoCompTemplateSpec(object):
     attribute_map = {
         'disabled': 'disabled',
         'env': 'env',
+        'image_pull_secrets': 'imagePullSecrets',
         'labels': 'labels',
         'node_selector': 'nodeSelector',
         'pod_metadata': 'podMetadata',
@@ -60,7 +62,7 @@ class JindoCompTemplateSpec(object):
         'volume_mounts': 'volumeMounts'
     }
 
-    def __init__(self, disabled=None, env=None, labels=None, node_selector=None, pod_metadata=None, ports=None, properties=None, replicas=None, resources=None, tolerations=None, volume_mounts=None, local_vars_configuration=None):  # noqa: E501
+    def __init__(self, disabled=None, env=None, image_pull_secrets=None, labels=None, node_selector=None, pod_metadata=None, ports=None, properties=None, replicas=None, resources=None, tolerations=None, volume_mounts=None, local_vars_configuration=None):  # noqa: E501
         """JindoCompTemplateSpec - a model defined in OpenAPI"""  # noqa: E501
         if local_vars_configuration is None:
             local_vars_configuration = Configuration()
@@ -68,6 +70,7 @@ class JindoCompTemplateSpec(object):
 
         self._disabled = None
         self._env = None
+        self._image_pull_secrets = None
         self._labels = None
         self._node_selector = None
         self._pod_metadata = None
@@ -83,6 +86,8 @@ class JindoCompTemplateSpec(object):
             self.disabled = disabled
         if env is not None:
             self.env = env
+        if image_pull_secrets is not None:
+            self.image_pull_secrets = image_pull_secrets
         if labels is not None:
             self.labels = labels
         if node_selector is not None:
@@ -147,6 +152,29 @@ class JindoCompTemplateSpec(object):
         """
 
         self._env = env
+
+    @property
+    def image_pull_secrets(self):
+        """Gets the image_pull_secrets of this JindoCompTemplateSpec.  # noqa: E501
+
+        ImagePullSecrets that will be used to pull images  # noqa: E501
+
+        :return: The image_pull_secrets of this JindoCompTemplateSpec.  # noqa: E501
+        :rtype: list[V1LocalObjectReference]
+        """
+        return self._image_pull_secrets
+
+    @image_pull_secrets.setter
+    def image_pull_secrets(self, image_pull_secrets):
+        """Sets the image_pull_secrets of this JindoCompTemplateSpec.
+
+        ImagePullSecrets that will be used to pull images  # noqa: E501
+
+        :param image_pull_secrets: The image_pull_secrets of this JindoCompTemplateSpec.  # noqa: E501
+        :type: list[V1LocalObjectReference]
+        """
+
+        self._image_pull_secrets = image_pull_secrets
 
     @property
     def labels(self):
