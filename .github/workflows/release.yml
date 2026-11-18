@@ -14,23 +14,27 @@ jobs:
     permissions:
       id-token: write
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          python-version: 3.8
-      - name: Install dependencies
+          persist-credentials: false
+      - name: Set up Python 3.12
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          # Keep in sync with --python-version in .github/build-requirements.txt
+          python-version: "3.12"
+      - name: Install build dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install setuptools build twine
+          python -m pip install --only-binary :all: --require-hashes -r .github/build-requirements.txt
       - name: Build dists
+        # --no-isolation builds with the hash-locked setuptools and setuptools-scm installed
+        # above instead of resolving [build-system].requires from PyPI.
         run: |
-          python -m build
+          python -m build --no-isolation
       - name: Publish distribution to Test Pypi
         if: startsWith(github.ref, 'refs/tags') && contains(github.ref, '-rc')
-        uses: pypa/gh-action-pypi-publish@release/v1
+        uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # v1.14.3
         with:
-          repository_url: https://test.pypi.org/legacy/
+          repository-url: https://test.pypi.org/legacy/
       - name: Publish distribution to Pypi
         if: startsWith(github.ref, 'refs/tags') && !contains(github.ref, '-rc')
-        uses: pypa/gh-action-pypi-publish@release/v1
+        uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # v1.14.3

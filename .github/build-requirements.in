@@ -1,0 +1,6 @@
+# Top-level build dependencies for .github/workflows/release.yml, which builds with
+# `python -m build --no-isolation`. Keep the setuptools and setuptools-scm constraints
+# in line with [build-system].requires in pyproject.toml.
+build
+setuptools>=64
+setuptools-scm>=8

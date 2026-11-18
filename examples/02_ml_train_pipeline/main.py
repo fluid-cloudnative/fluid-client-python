@@ -86,6 +86,20 @@ def test(model, device, test_loader):
         100. * correct / len(test_loader.dataset)))
 
 
+# --save-model-path must resolve to a location inside this directory, where the Fluid
+# dataset is mounted when the example runs as documented in pipeline.ipynb.
+SAVE_MODEL_BASE_DIR = '/data'
+
+
+def resolve_save_model_path(path):
+    """Resolve path and make sure it stays inside SAVE_MODEL_BASE_DIR."""
+    base_dir = os.path.realpath(SAVE_MODEL_BASE_DIR)
+    resolved_path = os.path.realpath(path)
+    if resolved_path != base_dir and not resolved_path.startswith(base_dir + os.sep):
+        raise ValueError('--save-model-path must be inside {}, got {!r}'.format(base_dir, path))
+    return resolved_path
+
+
 def main():
     # Training settings
     parser = argparse.ArgumentParser(description='PyTorch MNIST Example')
@@ -112,10 +126,17 @@ def main():
     parser.add_argument('--save-model', action='store_true', default=False,
                         help='For Saving the current Model')
     parser.add_argument('--save-model-path', type=str, default='/data/ckpt',
-                        help='Model path for Saving the current Model')
+                        help='Model path for Saving the current Model '
+                             '(must be inside {})'.format(SAVE_MODEL_BASE_DIR))
     parser.add_argument('--data', type=str, default='/data/mnist',
                         help='Data path')
     args = parser.parse_args()
+    save_model_path = None
+    if args.save_model:
+        try:
+            save_model_path = resolve_save_model_path(args.save_model_path)
+        except ValueError as e:
+            parser.error(str(e))
     use_cuda = not args.no_cuda and torch.cuda.is_available()
     use_mps = not args.no_mps and torch.backends.mps.is_available()
 
@@ -158,9 +179,8 @@ def main():
         scheduler.step()
 
     if args.save_model:
-        if not os.path.exists(args.save_model_path):
-            os.makedirs(args.save_model_path)
-        torch.save(model.state_dict(), os.path.join(args.save_model_path, 'mnist_cnn.pt'))
+        os.makedirs(save_model_path, exist_ok=True)
+        torch.save(model.state_dict(), os.path.join(save_model_path, 'mnist_cnn.pt'))
 
 
 if __name__ == '__main__':
